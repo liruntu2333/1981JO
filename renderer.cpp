@@ -111,6 +111,7 @@ static BLEND_MODE				g_BlendStateParam;
 static ID3D11RasterizerState*	g_RasterStateCullOff;
 static ID3D11RasterizerState*	g_RasterStateCullCW;
 static ID3D11RasterizerState*	g_RasterStateCullCCW;
+static ID3D11RasterizerState*	g_RasterStateDepth;
 
 
 static MATERIAL_CBUFFER	g_Material;
@@ -165,9 +166,9 @@ void SetBlendState(BLEND_MODE bm)
 	}
 }
 
-void SetCullingMode(CULL_MODE cm)
+void SetRasterizeState(RASTERIZE_STATE rs)
 {
-	switch (cm)
+	switch (rs)
 	{
 	case CULL_MODE_NONE:
 		g_ImmediateContext->RSSetState(g_RasterStateCullOff);
@@ -178,6 +179,8 @@ void SetCullingMode(CULL_MODE cm)
 	case CULL_MODE_BACK:
 		g_ImmediateContext->RSSetState(g_RasterStateCullCCW);
 		break;
+	case CULL_MODE_BACK_DEPTH:
+		g_ImmediateContext->RSSetState(g_RasterStateDepth);
 	}
 }
 
@@ -465,22 +468,32 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 
 	// ラスタライザステート作成
-	D3D11_RASTERIZER_DESC rd; 
-	ZeroMemory( &rd, sizeof( rd ) );
-	rd.FillMode = D3D11_FILL_SOLID;
-	rd.CullMode = D3D11_CULL_NONE; 
-	rd.DepthClipEnable = TRUE; 
-	rd.MultisampleEnable = FALSE; 
-	g_D3DDevice->CreateRasterizerState( &rd, &g_RasterStateCullOff);
+	D3D11_RASTERIZER_DESC rasterizerDesc; 
+	ZeroMemory( &rasterizerDesc, sizeof( rasterizerDesc ) );
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE; 
+	rasterizerDesc.DepthClipEnable = TRUE; 
+	rasterizerDesc.MultisampleEnable = FALSE; 
+	g_D3DDevice->CreateRasterizerState( &rasterizerDesc, &g_RasterStateCullOff);
 
-	rd.CullMode = D3D11_CULL_FRONT;
-	g_D3DDevice->CreateRasterizerState(&rd, &g_RasterStateCullCW);
+	rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+	g_D3DDevice->CreateRasterizerState(&rasterizerDesc, &g_RasterStateCullCW);
 
-	rd.CullMode = D3D11_CULL_BACK;
-	g_D3DDevice->CreateRasterizerState(&rd, &g_RasterStateCullCCW);
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	g_D3DDevice->CreateRasterizerState(&rasterizerDesc, &g_RasterStateCullCCW);
+	// Depth Bias Mode
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.FrontCounterClockwise = false;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.DepthBias = 100000;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.SlopeScaledDepthBias = 1.0f;
+	g_D3DDevice->CreateRasterizerState(&rasterizerDesc, &g_RasterStateDepth);
+
 
 	// カリングモード設定（CCW）
-	SetCullingMode(CULL_MODE_BACK);
+	SetRasterizeState(CULL_MODE_BACK);
 
 
 

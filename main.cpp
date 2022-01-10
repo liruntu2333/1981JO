@@ -238,7 +238,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	SetLightEnable(TRUE);
 
 	// 背面ポリゴンをカリング
-	SetCullingMode(CULL_MODE_BACK);
+	SetRasterizeState(CULL_MODE_BACK);
 
 
 	// フェードの初期化

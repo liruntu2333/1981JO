@@ -321,7 +321,7 @@ void DrawPlayer(void)
 {
 
 	// カリング無効
-	SetCullingMode(CULL_MODE_NONE);
+	SetRasterizeState(CULL_MODE_NONE);
 
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
@@ -398,7 +398,7 @@ void DrawPlayer(void)
 	SetFuchi(0);
 
 	// カリング設定を戻す
-	SetCullingMode(CULL_MODE_BACK);
+	SetRasterizeState(CULL_MODE_BACK);
 }
 
 

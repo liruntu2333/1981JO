@@ -195,7 +195,7 @@ void DrawEnemy(void)
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
 	// カリング無効
-	SetCullingMode(CULL_MODE_NONE);
+	SetRasterizeState(CULL_MODE_NONE);
 
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
@@ -227,7 +227,7 @@ void DrawEnemy(void)
 	}
 
 	// カリング設定を戻す
-	SetCullingMode(CULL_MODE_BACK);
+	SetRasterizeState(CULL_MODE_BACK);
 }
 
 //=============================================================================

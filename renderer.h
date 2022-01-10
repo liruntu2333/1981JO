@@ -31,11 +31,12 @@ enum BLEND_MODE
 	BLEDD_MODE_NUM
 };
 
-enum CULL_MODE
+enum RASTERIZE_STATE
 {
 	CULL_MODE_NONE,			//ƒJƒŠƒ“ƒO–³‚µ
 	CULL_MODE_FRONT,		//•\‚Ìƒ|ƒŠƒSƒ“‚ð•`‰æ‚µ‚È‚¢(CW)
 	CULL_MODE_BACK,			//— ‚Ìƒ|ƒŠƒSƒ“‚ð•`‰æ‚µ‚È‚¢(CCW)
+	CULL_MODE_BACK_DEPTH,
 
 	CULL_MODE_NUM
 };
@@ -98,7 +99,7 @@ ID3D11DeviceContext *GetDeviceContext( void );
 
 void SetDepthEnable( BOOL Enable );
 void SetBlendState(BLEND_MODE bm);
-void SetCullingMode(CULL_MODE cm);
+void SetRasterizeState(RASTERIZE_STATE cm);
 void SetAlphaTestEnable(BOOL flag);
 
 void SetWorldViewProjection2D( void );
