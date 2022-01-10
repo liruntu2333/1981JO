@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{49bf6099-9354-47e4-b04f-50a169680324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader\ShadowEffect">
+      <UniqueIdentifier>{ed4533a1-a406-4bb2-a395-1a257baa983b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer.h">
@@ -155,5 +161,16 @@
     <ClCompile Include="bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HLSL\ShadowInstance_VS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\ShadowObject_VS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\Shadow_PS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

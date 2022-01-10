@@ -15,7 +15,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY			"data/MODEL/snail.obj"		// 読み込むモデル名
+#define	MODEL_ENEMY			"data/MODEL/enemy.obj"		// 読み込むモデル名
+#define	MODEL_SPHERE		"data/MODEL/sphere.obj"
 
 #define	VALUE_MOVE			(5.0f)						// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)				// 回転量
@@ -51,7 +52,7 @@ static INTERPOLATION_DATA move_tbl[] = {	// pos, rot, scl, frame
 //=============================================================================
 HRESULT InitEnemy(void)
 {
-	for (int i = 0; i < MAX_ENEMY; i++)
+	for (int i = 0; i < MAX_ENEMY - 1; i++)
 	{
 		LoadModel(MODEL_ENEMY, &g_Enemy[i].model);
 		g_Enemy[i].load = TRUE;
@@ -77,6 +78,30 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].use = TRUE;			// TRUE:生きてる
 
 	}
+
+	LoadModel(MODEL_SPHERE, &g_Enemy[MAX_ENEMY - 1].model);
+	g_Enemy[MAX_ENEMY - 1].load = TRUE;
+
+	g_Enemy[MAX_ENEMY - 1].pos = XMFLOAT3(-50.0f + MAX_ENEMY * 30.0f, .0f, 20.0f);
+	g_Enemy[MAX_ENEMY - 1].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	g_Enemy[MAX_ENEMY - 1].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
+
+	g_Enemy[MAX_ENEMY - 1].spd = 0.0f;			// 移動スピードクリア
+	g_Enemy[MAX_ENEMY - 1].size = ENEMY_SIZE;	// 当たり判定の大きさ
+
+	// モデルのディフューズを保存しておく。色変え対応の為。
+	GetModelDiffuse(&g_Enemy[0].model, &g_Enemy[0].diffuse[0]);
+
+	XMFLOAT3 pos = g_Enemy[MAX_ENEMY - 1].pos;
+	pos.y -= (ENEMY_OFFSET_Y - 0.1f);
+	g_Enemy[MAX_ENEMY - 1].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE, ENEMY_SHADOW_SIZE);
+
+	g_Enemy[MAX_ENEMY - 1].move_time = 0.0f;	// 線形補間用のタイマーをクリア
+	g_Enemy[MAX_ENEMY - 1].tbl_adr = NULL;		// 再生するアニメデータの先頭アドレスをセット
+	g_Enemy[MAX_ENEMY - 1].tbl_size = 0;		// 再生するアニメデータのレコード数をセット
+
+	g_Enemy[MAX_ENEMY - 1].use = TRUE;			// TRUE:生きてる
+
 
 
 	// 0番だけ線形補間で動かしてみる

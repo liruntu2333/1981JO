@@ -76,6 +76,7 @@ HRESULT InitShadow(void)
 	{
 		ZeroMemory(&g_aShadow[nCntShadow].material, sizeof(g_aShadow[nCntShadow].material));
 		g_aShadow[nCntShadow].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		g_aShadow[nCntShadow].material.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 
 		g_aShadow[nCntShadow].pos = XMFLOAT3(0.0f, 0.1f, 0.0f);
 		g_aShadow[nCntShadow].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -187,7 +188,7 @@ void DrawShadow(void)
 	SetDepthEnable(TRUE);
 
 	// フォグ有効
-	SetFogEnable(TRUE);
+	SetFogEnable(FALSE);
 }
 
 //=============================================================================

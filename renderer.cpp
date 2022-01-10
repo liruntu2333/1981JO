@@ -606,7 +606,7 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	pVSBlob->Release();
 
-
+	//TODO: create shader here
 	// ピクセルシェーダコンパイル・生成
 	ID3DBlob* pPSBlob = NULL;
 	hr = D3DX11CompileFromFile( "shader.hlsl", NULL, NULL, "PixelShaderPolygon", "ps_4_0", shFlag, 0, NULL, &pPSBlob, &pErrorBlob, NULL );
@@ -678,6 +678,7 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// 入力レイアウト設定
 	g_ImmediateContext->IASetInputLayout( g_VertexLayout );
 
+	// TODO: Set Shader here
 	// シェーダ設定
 	g_ImmediateContext->VSSetShader( g_VertexShader, NULL, 0 );
 	g_ImmediateContext->PSSetShader( g_PixelShader, NULL, 0 );
@@ -744,7 +745,7 @@ void UninitRenderer(void)
 void Clear(void)
 {
 	// バックバッファクリア
-	float ClearColor[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	g_ImmediateContext->ClearRenderTargetView( g_RenderTargetView, ClearColor );
 	g_ImmediateContext->ClearDepthStencilView( g_DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

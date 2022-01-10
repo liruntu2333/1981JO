@@ -171,15 +171,30 @@ void PixelShaderPolygon( in  float4 inPosition		: SV_POSITION,
 				}
 				else if (Light.Flags[i].x == 2)
 				{
-					lightDir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
-					light = dot(lightDir, inNormal.xyz);
+					//tempColor.xyz = normalize(inNormal.xyz);
+					// Blin-Phong Shading
+					float3 ambient = { .0f, .0f, .0f };
+					float3 diffuse = { .0f, .0f, .0f };
+					float3 specular = {.0f, .0f, .0f };
+					float3 light_dir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
+					float3 view_dir = normalize(Camera.xyz - inWorldPos.xyz);
+					float3 half_vec = normalize(light_dir + view_dir);
+					float distance = length(inWorldPos.xyz - Light.Position[i].xyz);
+					tempColor = color * Material.Diffuse * 0.1f;
+					ambient = Light.Ambient[i].xyz * Material.Ambient.xyz / 100.f;
+					diffuse = color * Light.Diffuse[i].xyz / pow(distance, 2.f) * max(.0f, dot(inNormal.xyz, light_dir)) * 255.f;
+					specular = Material.Specular.xyz / pow(distance, 2.f) * pow(max(.0f, dot(inNormal.xyz, half_vec)), 150.f) * 255.f;
+					tempColor.xyz = ambient + diffuse + specular;
 
-					tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
+					//lightDir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
+					//light = dot(lightDir, inNormal.xyz);
 
-					float distance = length(inWorldPos - Light.Position[i]);
+					//tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
 
-					float att = saturate((Light.Attenuation[i].x - distance) / Light.Attenuation[i].x);
-					tempColor *= att;
+					//float distance = length(inWorldPos - Light.Position[i]);
+
+					//float att = saturate((Light.Attenuation[i].x - distance) / Light.Attenuation[i].x);
+					//tempColor *= att;
 				}
 				else
 				{
@@ -202,10 +217,12 @@ void PixelShaderPolygon( in  float4 inPosition		: SV_POSITION,
 		f = saturate(f);
 		outDiffuse = f * color + (1 - f)*Fog.FogColor;
 		outDiffuse.a = color.a;
+		clip(outDiffuse.a - .1f);
 	}
 	else
 	{
 		outDiffuse = color;
+		clip(outDiffuse.a - .1f);
 	}
 
 	//âèéÊÇË

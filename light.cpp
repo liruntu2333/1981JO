@@ -6,6 +6,8 @@
 //=============================================================================
 #include "main.h"
 #include "renderer.h"
+#include "model.h"
+#include "player.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -35,19 +37,21 @@ void InitLight(void)
 	//ライト初期化
 	for (int i = 0; i < LIGHT_MAX; i++)
 	{
-		g_Light[i].Position  = XMFLOAT3( 0.0f, 0.0f, 0.0f );
+		g_Light[i].Position  = XMFLOAT3( 0.0f, 10.0f, 0.0f );
 		g_Light[i].Direction = XMFLOAT3( 0.0f, -1.0f, 0.0f );
 		g_Light[i].Diffuse   = XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f );
-		g_Light[i].Ambient   = XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
+		g_Light[i].Ambient   = XMFLOAT4( 0.2f, 0.2f, 0.2f, 0.0f );
 		g_Light[i].Attenuation = 100.0f;	// 減衰距離
-		g_Light[i].Type = LIGHT_TYPE_NONE;	// ライトのタイプ
+		g_Light[i].Type = LIGHT_TYPE_POINT;	// ライトのタイプ
 		g_Light[i].Enable = FALSE;			// ON / OFF
 		SetLight(i, &g_Light[i]);
 	}
+	g_Light[LIGHT_MAX - 1].Enable = TRUE;
+	SetLight(LIGHT_MAX - 1, &g_Light[LIGHT_MAX - 1]);
 
 	// 並行光源の設定（世界を照らす光）
-	g_Light[0].Direction = XMFLOAT3( 0.0f, -1.0f, 0.0f );		// 光の向き
-	g_Light[0].Diffuse   = XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f );	// 光の色
+	g_Light[0].Direction = XMFLOAT3( 1.0f, -1.0f, 0.0f );		// 光の向き
+	g_Light[0].Diffuse   = XMFLOAT4( .5f, .5f, .5f, 1.0f );	// 光の色
 	g_Light[0].Type = LIGHT_TYPE_DIRECTIONAL;					// 並行光源
 	g_Light[0].Enable = TRUE;									// このライトをON
 	SetLight(0, &g_Light[0]);									// これで設定している
@@ -59,7 +63,7 @@ void InitLight(void)
 	g_Fog.FogEnd   = 250.0f;									// ここまで離れるとフォグの色で見えなくなる
 	g_Fog.FogColor = XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f );		// フォグの色
 	SetFog(&g_Fog);
-	SetFogEnable(TRUE);		// 他の場所もチェックする shadow
+	SetFogEnable(FALSE);		// 他の場所もチェックする shadow
 
 }
 
@@ -69,9 +73,9 @@ void InitLight(void)
 //=============================================================================
 void UpdateLight(void)
 {
-
-
-
+	g_Light[LIGHT_MAX - 1].Position = GetPlayer()->pos;
+	g_Light[LIGHT_MAX - 1].Position.y += 20.0f;
+	SetLight(LIGHT_MAX - 1, &g_Light[LIGHT_MAX - 1]);
 }
 
 

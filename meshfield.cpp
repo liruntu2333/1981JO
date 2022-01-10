@@ -257,7 +257,7 @@ void UninitMeshField(void)
 void UpdateMeshField(void)
 {
 
-	//return;	// 処理をスキップ！
+	return;	// 処理をスキップ！
 
 	// 波の処理
 	float dt = 0.03f;

@@ -98,7 +98,7 @@ HRESULT InitGame(void)
 	InitParticle();
 
 	// BGM再生
-	PlaySound(SOUND_LABEL_BGM_sample001);
+	//PlaySound(SOUND_LABEL_BGM_sample001);
 
 	return S_OK;
 }
@@ -179,7 +179,7 @@ void UpdateGame(void)
 	UpdateBullet();
 
 	// パーティクルの更新処理
-	UpdateParticle();
+	//UpdateParticle();
 
 	// 影の更新処理
 	UpdateShadow();
@@ -219,7 +219,7 @@ void DrawGame0(void)
 	DrawTree();
 
 	// パーティクルの描画処理
-	DrawParticle();
+	//DrawParticle();
 
 
 	// 2Dの物を描画する処理
