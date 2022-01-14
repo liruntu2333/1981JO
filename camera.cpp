@@ -72,7 +72,6 @@ void UninitCamera(void)
 void UpdateCamera(void)
 {
 
-#ifdef _DEBUG
 
 	if (GetKeyboardPress(DIK_Z))
 	{// 視点旋回「左」
@@ -163,7 +162,6 @@ void UpdateCamera(void)
 		InitCamera();
 	}
 
-#endif
 
 
 
@@ -289,6 +287,5 @@ void SetCameraAT(XMFLOAT3 pos)
 	// カメラの視点をカメラのY軸回転に対応させている
 	g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
 	g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
-
 }
 

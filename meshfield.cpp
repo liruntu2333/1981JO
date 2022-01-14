@@ -9,6 +9,10 @@
 #include "meshfield.h"
 #include "renderer.h"
 #include "collision.h"
+#include "camera.h"
+#include "lightforshadow.h"
+#include "rendertexture.h"
+#include "depthshader.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -99,7 +103,7 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 	// 波の処理
 	// 波の高さ = sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
 	g_Vertex = new VERTEX_3D[g_nNumVertexField];
-	g_Center = XMFLOAT3(0.0f, 0.0f, 0.0f);		// 波の発生場所
+	g_Center = XMFLOAT3(100.0f, 0.0f, 100.0f);		// 波の発生場所
 	g_Time = 0.0f;								// 波の経過時間(＋とーとで内側外側になる)
 	g_wave_frequency = 1.0f;					// 波の周波数（上下運動の速さ）
 	g_wave_correction = 0.02f;					// 波の距離補正（変えなくても良いと思う）
@@ -122,7 +126,7 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 			// 波の高さを、sin関数で得る
 			// 波の高さ　= sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = sinf(-g_Time * g_wave_frequency + len * g_wave_correction) * g_wave_amplitude;
-			g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = 0.0f;
+			//g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = 0.0f;
 
 			// 法線の設定
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal = XMFLOAT3(0.0f, 1.0, 0.0f);
@@ -338,6 +342,57 @@ void DrawMeshField(void)
 
 	// ポリゴンの描画
 	GetDeviceContext()->DrawIndexed(g_nNumVertexIndexField, 0, 0);
+
+	//D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
+	//GetSLViewMatrix(lightViewMatrix);
+	//GetSLProjectionMatrix(lightProjectionMatrix);
+
+	//// Render the model using the shadow shader.
+	// RenderShadow(GetDeviceContext(), g_nNumVertexIndexField, *reinterpret_cast<D3DXMATRIX*>(&mtxWorld), *reinterpret_cast<D3DXMATRIX*>(&GetCamera()->mtxView),
+	//	 *reinterpret_cast<D3DXMATRIX*>(&GetCamera()->mtxProjection), 
+	//	 lightViewMatrix,
+	//	lightProjectionMatrix, g_Texture[0], GetRTShaderResourceView(), GetSLPosition(),
+	//	GetSLAmbientColor(), GetSLDiffuseColor());
+}
+
+bool RenderFieldWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix)
+{
+	// Get the Identity world matrix.
+	XMMATRIX mtxRot, mtxTranslate, mtxWorld;
+
+	// ワールドマトリックスの初期化
+	mtxWorld = XMMatrixIdentity();
+
+	mtxRot = XMMatrixRotationRollPitchYaw(g_rotField.x, g_rotField.y, g_rotField.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+	mtxTranslate = XMMatrixTranslation(g_posField.x, g_posField.y, g_posField.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+	unsigned int stride;
+	unsigned int offset;
+
+	// Set vertex buffer stride and offset.
+	stride = sizeof(VERTEX_3D);
+	offset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	GetDeviceContext()->IASetIndexBuffer(g_IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	if (!RenderDepthShader(GetDeviceContext(),
+		g_nNumVertexIndexField,
+		0,
+		xmmatrix2d3dmatrix(mtxWorld),
+		lightViewMatrix,
+		lightProjectionMatrix)) return false;
+
+	return true;
 }
 
 
@@ -366,14 +421,6 @@ BOOL RayHitField(XMFLOAT3 pos, XMFLOAT3 *HitPosition, XMFLOAT3 *Normal)
 		*Normal = {0.0f, 1.0f, 0.0f};
 		return FALSE;
 	}
-
-
-	// フィールドの全ポリゴン検索
-	sz = 0;
-	sx = 0;
-	ez = g_nNumBlockZField;
-	ex = g_nNumBlockXField;
-
 
 	// 必要数分検索を繰り返す
 	for (int z = sz; z < ez; z++)

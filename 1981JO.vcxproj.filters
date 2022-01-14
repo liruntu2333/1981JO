@@ -90,7 +90,16 @@
     <ClInclude Include="player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DXTrace.h">
+    <ClInclude Include="shadowshader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightforshadow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendertexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="depthshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -164,7 +173,16 @@
     <ClCompile Include="bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DXTrace.cpp">
+    <ClCompile Include="shadowshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightforshadow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendertexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="depthshader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,6 +194,21 @@
       <Filter>shader\ShadowEffect</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\Shadow_PS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\shadowVS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\shadowPS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="shader.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\depthVS.hlsl">
+      <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\depthPS.hlsl">
       <Filter>shader\ShadowEffect</Filter>
     </FxCompile>
   </ItemGroup>

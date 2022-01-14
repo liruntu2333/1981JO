@@ -6,7 +6,6 @@
 //=============================================================================
 #pragma once
 
-
 //*****************************************************************************
 // É}ÉNÉçíËã`
 //*****************************************************************************
@@ -50,3 +49,4 @@ void DrawEnemy(void);
 
 ENEMY *GetEnemy(void);
 
+bool RenderEnemyWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix);

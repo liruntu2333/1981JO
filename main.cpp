@@ -28,11 +28,24 @@
 #include "result.h"
 #include "fade.h"
 
+#include "shadowshader.h"
+#include "lightforshadow.h"
+#include "depthshader.h"
+#include "rendertexture.h"
+
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"メッシュ表示"		// ウインドウのキャプション名
+#define WINDOW_NAME		"Engine Camera Rotation:ZC QE Distance : YN Pitch: UM Reset : R"		// ウインドウのキャプション名
+
+/////////////
+// GLOBALS //
+/////////////
+static const float SCREEN_DEPTH = 10000.0f;
+static const float SCREEN_NEAR = 1.0f;
+static const int SHADOWMAP_WIDTH = 4096;
+static const int SHADOWMAP_HEIGHT = 4096;
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -42,7 +55,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);
 void Uninit(void);
 void Update(void);
 void Draw(void);
-
+bool RenderSceneToTexture();
 
 //*****************************************************************************
 // グローバル変数:
@@ -223,7 +236,36 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	InitRenderer(hInstance, hWnd, bWindow);
 
+	// Initialize Shadow Shader
+	InitShadowShader(GetDevice(), hWnd);
+
+	// Initialize Depth Shader
+	InitDepthShader(GetDevice(), hWnd);
+
+	// Initialize Render texture helper
+	InitRenderTex(GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
+
 	InitLight();
+
+	// Initialize the shadow light object.
+	{
+		SetSLPosition(0.f, 800.0f, 0.f);
+		SetSLLookAt(0.0f, 0.0f, 0.0f);
+		GenerateSLViewMatrix();
+		GenerateSLProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+
+		// Set Light position
+		D3DXVECTOR3 lightPosition = GetSLPosition();
+		LIGHT2 l2{ {lightPosition.x, lightPosition.y, lightPosition.z}, 0.f };
+		SetShadowLight(&l2);
+
+		// Set Light View & Proj Matrix
+		D3DXMATRIX matrix;
+		GetSLViewMatrix(matrix);
+		SetLightViewMatrix(&d3dmatrix2xmmatrix(matrix));
+		GetSLProjectionMatrix(matrix);
+		SetLightProjMatrix(&d3dmatrix2xmmatrix(matrix));
+	}
 
 	InitCamera();
 
@@ -270,6 +312,13 @@ void Uninit(void)
 
 	// レンダラーの終了処理
 	UninitRenderer();
+
+	//Shut down Shadow Shader
+	ShutdownSS();
+	// Shut down Depth Shader
+	ShutdownDS();
+	// Shut down Render to texture helper
+	ShutdownRenderTex();
 }
 
 //=============================================================================
@@ -341,6 +390,15 @@ void Draw(void)
 		break;
 
 	case MODE_GAME:			// ゲーム画面の描画
+		// Implement RenderSceneToTexture() from tutorial40, GraphicsClass::RenderSceneToTexture()
+		// before rendering the gameobj, render enemy & player to the texture for shadow shader
+		if(!RenderSceneToTexture()) 
+		{
+#ifdef _DEBUG
+			PrintDebugProc("render depth texture failed\n");
+#endif // _DEBUG
+		}
+
 		DrawGame();
 		break;
 
@@ -453,3 +511,56 @@ int GetMode(void)
 	return g_Mode;
 }
 
+bool RenderSceneToTexture()
+{
+	ID3D11ShaderResourceView* null = nullptr;
+	GetDeviceContext()->PSSetShaderResources(1, 1, &null);
+
+	D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
+
+	bool result;
+
+	// Set the render target to be the render to texture.
+	SetRTRenderTarget(GetDeviceContext());
+
+	// Clear the render to texture.
+	ClearRTRenderTarget(GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Generate the light view matrix based on the light's position.
+	GenerateSLViewMatrix();
+
+	// Get the view and orthographic matrices from the light object.
+	GetSLViewMatrix(lightViewMatrix);
+	GetSLProjectionMatrix(lightProjectionMatrix);
+
+	// Render Player model with depth shader.
+	result = RenderPlayerWithDepthShader(lightViewMatrix, lightProjectionMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Render Enemy model with depth shader.
+	result = RenderEnemyWithDepthShader(lightViewMatrix, lightProjectionMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Render the ground model with the depth shader.
+	//result = RenderFieldWithDepthShader(lightViewMatrix, lightProjectionMatrix);
+	//if (!result)
+	//{
+	//	return false;
+	//}
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	// Reset the viewport back to the original.
+	ResetRenderer();
+
+	// Setup depth texture in formal render.
+	ID3D11ShaderResourceView* pShaderResourceView = GetRTShaderResourceView();
+	GetDeviceContext()->PSSetShaderResources(1, 1, &pShaderResourceView);
+
+	return true;
+}

@@ -6,6 +6,10 @@
 //=============================================================================
 #pragma once
 
+//
+// Include
+//
+
 
 //*********************************************************
 // マクロ定義
@@ -84,6 +88,11 @@ struct FOG {
 	XMFLOAT4	FogColor;	// フォグの色
 };
 
+struct LIGHT2 {
+	XMFLOAT3	lightPosition;
+	float		padding;
+};
+
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -106,11 +115,14 @@ void SetWorldViewProjection2D( void );
 void SetWorldMatrix( XMMATRIX *WorldMatrix );
 void SetViewMatrix( XMMATRIX *ViewMatrix );
 void SetProjectionMatrix( XMMATRIX *ProjectionMatrix );
+void SetLightViewMatrix(XMMATRIX* LightViewMatrix);
+void SetLightProjMatrix(XMMATRIX* LightProjectionMatrix);
 
 void SetMaterial( MATERIAL material );
 
 void SetLightEnable(BOOL flag);
 void SetLight(int index, LIGHT* light);
+void SetShadowLight(LIGHT2* light);
 
 void SetFogEnable(BOOL flag);
 void SetFog(FOG* fog);
@@ -120,3 +132,4 @@ void DebugTextOut(char* text, int x, int y);
 void SetFuchi(int flag);
 void SetShaderCamera(XMFLOAT3 pos);
 
+void ResetRenderer(void);

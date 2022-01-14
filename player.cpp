@@ -4,16 +4,17 @@
 // Author : 
 //
 //=============================================================================
+#include "model.h"
 #include "main.h"
 #include "input.h"
 #include "camera.h"
 #include "debugproc.h"
-#include "model.h"
 #include "player.h"
 #include "shadow.h"
 #include "light.h"
 #include "bullet.h"
 #include "meshfield.h"
+#include "depthshader.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -349,7 +350,7 @@ void DrawPlayer(void)
 
 	XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
 
-	SetFuchi(0);
+	SetFuchi(1);
 	// モデル描画
 	DrawModel(&g_Player.model);
 
@@ -389,7 +390,7 @@ void DrawPlayer(void)
 		SetWorldMatrix(&mtxWorld);
 
 
-		SetFuchi(0);
+		SetFuchi(1);
 		// モデル描画
 		DrawModel(&g_Parts[i].model);
 
@@ -401,6 +402,54 @@ void DrawPlayer(void)
 	SetRasterizeState(CULL_MODE_BACK);
 }
 
+bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix)
+{
+	// Get the Identity world matrix.
+	XMMATRIX mtxWorld = XMMatrixIdentity();
+
+	XMMATRIX mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+	XMMATRIX mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+	XMMATRIX mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
+	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+
+	if(!RenderModelToTexture(&g_Player.model, 
+		xmmatrix2d3dmatrix(mtxWorld), 
+		lightViewMatrix, lightProjectionMatrix))
+		return false;
+
+	for (size_t i = 0; i < PLAYER_PARTS_MAX; i++)
+	{
+		// Get the Identity world matrix.
+		XMMATRIX mtxWorld = XMMatrixIdentity();
+
+		XMMATRIX mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		XMMATRIX mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		XMMATRIX mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
+		{
+			mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
+			// ↑
+			// g_Player.mtxWorldを指している
+		}
+
+		if (!RenderModelToTexture(&g_Parts[i].model,
+			xmmatrix2d3dmatrix(mtxWorld),
+			lightViewMatrix, lightProjectionMatrix))
+			return false;
+	}
+	return true;
+}
 
 //=============================================================================
 // プレイヤー情報を取得
@@ -409,4 +458,3 @@ PLAYER *GetPlayer(void)
 {
 	return &g_Player;
 }
-

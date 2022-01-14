@@ -11,6 +11,8 @@
 #include "model.h"
 #include "enemy.h"
 #include "shadow.h"
+#include "depthshader.h"
+#include "meshfield.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -57,7 +59,7 @@ HRESULT InitEnemy(void)
 		LoadModel(MODEL_ENEMY, &g_Enemy[i].model);
 		g_Enemy[i].load = TRUE;
 
-		g_Enemy[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 20.0f);
+		g_Enemy[i].pos = XMFLOAT3(-50.0f  + i * 30.0f, ENEMY_OFFSET_Y, 50.0f * (i % 2 ? 1.0f : -1.0f));
 		g_Enemy[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Enemy[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
@@ -177,6 +179,12 @@ void UpdateEnemy(void)
 				XMStoreFloat3(&g_Enemy[i].scl, s0 + scl * time);
 
 			}
+			// レイキャストして足元の高さを求める
+			XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
+			XMFLOAT3 hitPosition;								// 交点
+			hitPosition.y = g_Enemy[i].pos.y - ENEMY_OFFSET_Y;	// 外れた時用に初期化しておく
+			bool ans = RayHitField(g_Enemy[i].pos, &hitPosition, &normal);
+			g_Enemy[i].pos.y = hitPosition.y + ENEMY_OFFSET_Y;
 
 			// 影もプレイヤーの位置に合わせる
 			XMFLOAT3 pos = g_Enemy[i].pos;
@@ -196,6 +204,8 @@ void DrawEnemy(void)
 
 	// カリング無効
 	SetRasterizeState(CULL_MODE_NONE);
+
+	SetFuchi(0);
 
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
@@ -221,11 +231,13 @@ void DrawEnemy(void)
 
 		XMStoreFloat4x4(&g_Enemy[i].mtxWorld, mtxWorld);
 
-
+		if (i == MAX_ENEMY - 1) SetFuchi(1);
 		// モデル描画
 		DrawModel(&g_Enemy[i].model);
-	}
 
+		SetFuchi(0);
+	}
+	SetFuchi(0);
 	// カリング設定を戻す
 	SetRasterizeState(CULL_MODE_BACK);
 }
@@ -236,4 +248,31 @@ void DrawEnemy(void)
 ENEMY *GetEnemy()
 {
 	return &g_Enemy[0];
+}
+
+bool RenderEnemyWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix)
+{
+	for (size_t i = 0; i < MAX_ENEMY; i++)
+	{
+		if (g_Enemy[i].use == FALSE) continue;
+
+		// Get the Identity world matrix.
+		XMMATRIX mtxWorld = XMMatrixIdentity();
+
+		XMMATRIX mtxScl = XMMatrixScaling(g_Enemy[i].scl.x, g_Enemy[i].scl.y, g_Enemy[i].scl.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
+
+		XMMATRIX mtxRot = XMMatrixRotationRollPitchYaw(g_Enemy[i].rot.x, g_Enemy[i].rot.y + XM_PI, g_Enemy[i].rot.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		XMMATRIX mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);
+		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+		if (!RenderModelToTexture(&g_Enemy[i].model, 
+			xmmatrix2d3dmatrix(mtxWorld), 
+			lightViewMatrix, lightProjectionMatrix))
+			return false;
+		
+	}
+	return true;
 }

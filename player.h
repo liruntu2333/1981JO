@@ -6,7 +6,6 @@
 //=============================================================================
 #pragma once
 
-
 //*****************************************************************************
 // É}ÉNÉçíËã`
 //*****************************************************************************
@@ -60,3 +59,4 @@ void DrawPlayer(void);
 
 PLAYER *GetPlayer(void);
 
+bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix);

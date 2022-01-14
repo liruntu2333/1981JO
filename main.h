@@ -18,6 +18,7 @@
 #include <d3dcompiler.h>
 
 #include <DirectXMath.h>
+#include <d3dx10math.h>
 
 
 // ñ{óàÇÕÉwÉbÉ_Ç…èëÇ©Ç»Ç¢ï˚Ç™ó«Ç¢
@@ -89,3 +90,22 @@ char* GetDebugStr(void);
 void SetMode(int mode);
 int GetMode(void);
 
+inline XMMATRIX d3dmatrix2xmmatrix(D3DXMATRIX& M)
+{
+	return XMMATRIX{ 
+		M._11, M._12, M._13, M._14,
+		M._21, M._22, M._23, M._24,
+		M._31, M._32, M._33, M._34,
+		M._41, M._42, M._43, M._44,};
+}
+
+inline D3DXMATRIX xmmatrix2d3dmatrix(XMMATRIX& M)
+{
+	XMFLOAT4X4 tmp;
+	XMStoreFloat4x4(&tmp, M);
+	return D3DXMATRIX{
+		tmp._11, tmp._12, tmp._13, tmp._14,
+		tmp._21, tmp._22, tmp._23, tmp._24,
+		tmp._31, tmp._32, tmp._33, tmp._34,
+		tmp._41, tmp._42, tmp._43, tmp._44, };
+}

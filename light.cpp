@@ -8,6 +8,7 @@
 #include "renderer.h"
 #include "model.h"
 #include "player.h"
+#include "lightforshadow.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -46,11 +47,11 @@ void InitLight(void)
 		g_Light[i].Enable = FALSE;			// ON / OFF
 		SetLight(i, &g_Light[i]);
 	}
-	g_Light[LIGHT_MAX - 1].Enable = TRUE;
-	SetLight(LIGHT_MAX - 1, &g_Light[LIGHT_MAX - 1]);
+	//g_Light[LIGHT_MAX - 1].Enable = TRUE;
+	//SetLight(LIGHT_MAX - 1, &g_Light[LIGHT_MAX - 1]);
 
 	// 並行光源の設定（世界を照らす光）
-	g_Light[0].Direction = XMFLOAT3( 1.0f, -1.0f, 0.0f );		// 光の向き
+	g_Light[0].Direction = XMFLOAT3( 0.0f, -1.0f, 0.0f );		// 光の向き
 	g_Light[0].Diffuse   = XMFLOAT4( .7f, .7f, .7f, 1.0f );	// 光の色
 	g_Light[0].Type = LIGHT_TYPE_DIRECTIONAL;					// 並行光源
 	g_Light[0].Enable = TRUE;									// このライトをON
@@ -64,7 +65,6 @@ void InitLight(void)
 	g_Fog.FogColor = XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f );		// フォグの色
 	SetFog(&g_Fog);
 	SetFogEnable(FALSE);		// 他の場所もチェックする shadow
-
 }
 
 
@@ -73,9 +73,9 @@ void InitLight(void)
 //=============================================================================
 void UpdateLight(void)
 {
-	g_Light[LIGHT_MAX - 1].Position = GetPlayer()->pos;
-	g_Light[LIGHT_MAX - 1].Position.y += 20.0f;
-	SetLight(LIGHT_MAX - 1, &g_Light[LIGHT_MAX - 1]);
+	//g_Light[LIGHT_MAX - 1].Position = GetPlayer()->pos;
+	//g_Light[LIGHT_MAX - 1].Position.y += 20.0f;
+	//SetLight(LIGHT_MAX - 1, &g_Light[LIGHT_MAX - 1]);
 }
 
 

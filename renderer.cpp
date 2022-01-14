@@ -6,6 +6,8 @@
 //=============================================================================
 #include "main.h"
 #include "renderer.h"
+#include "lightforshadow.h"
+
 
 //デバッグ用画面テキスト出力を有効にする
 #define DEBUG_DISP_TEXTOUT
@@ -50,6 +52,13 @@ struct LIGHT_CBUFFER
 	int			Dummy[3];				// 16byte境界用
 };
 
+// Buffer contains light information for generate shadow.
+struct LIGHT2_CBUFFER
+{
+	XMFLOAT3	position;
+	float		padding;
+};
+
 // フォグ用定数バッファ構造体
 struct FOG_CBUFFER
 {
@@ -71,6 +80,7 @@ struct FUCHI
 // プロトタイプ宣言
 //*****************************************************************************
 static void SetLightBuffer(void);
+void SetShadowLightBuffer(void);
 
 
 //*****************************************************************************
@@ -87,8 +97,12 @@ static ID3D11DepthStencilView* g_DepthStencilView = NULL;
 
 
 static ID3D11VertexShader*		g_VertexShader = NULL;
+//static ID3D11VertexShader*		g_SIVertexShader = NULL;
+//static ID3D11VertexShader*		g_SOVertexShader = NULL;
 static ID3D11PixelShader*		g_PixelShader = NULL;
+//static ID3D11PixelShader*		g_SPixelShader = NULL;
 static ID3D11InputLayout*		g_VertexLayout = NULL;
+static ID3D11InputLayout*		g_SVLayout = NULL;
 static ID3D11Buffer*			g_WorldBuffer = NULL;
 static ID3D11Buffer*			g_ViewBuffer = NULL;
 static ID3D11Buffer*			g_ProjectionBuffer = NULL;
@@ -97,6 +111,9 @@ static ID3D11Buffer*			g_LightBuffer = NULL;
 static ID3D11Buffer*			g_FogBuffer = NULL;
 static ID3D11Buffer*			g_FuchiBuffer = NULL;
 static ID3D11Buffer*			g_CameraBuffer = NULL;
+static ID3D11Buffer*			g_ShadowLightBuffer = NULL;
+static ID3D11Buffer*			g_LightViewBuffer = NULL;
+static ID3D11Buffer*			g_LightProjBuffer = NULL;
 
 static ID3D11DepthStencilState* g_DepthStateEnable;
 static ID3D11DepthStencilState* g_DepthStateDisable;
@@ -111,11 +128,15 @@ static BLEND_MODE				g_BlendStateParam;
 static ID3D11RasterizerState*	g_RasterStateCullOff;
 static ID3D11RasterizerState*	g_RasterStateCullCW;
 static ID3D11RasterizerState*	g_RasterStateCullCCW;
-static ID3D11RasterizerState*	g_RasterStateDepth;
+//static ID3D11RasterizerState*	g_RasterStateDepth;
+
+ID3D11SamplerState* g_samplerState = NULL;
+ID3D11SamplerState* g_samplerStateClamp = NULL;
 
 
 static MATERIAL_CBUFFER	g_Material;
 static LIGHT_CBUFFER	g_Light;
+static LIGHT2_CBUFFER	g_ShadowLight;
 static FOG_CBUFFER		g_Fog;
 
 static FUCHI			g_Fuchi;
@@ -179,8 +200,9 @@ void SetRasterizeState(RASTERIZE_STATE rs)
 	case CULL_MODE_BACK:
 		g_ImmediateContext->RSSetState(g_RasterStateCullCCW);
 		break;
-	case CULL_MODE_BACK_DEPTH:
-		g_ImmediateContext->RSSetState(g_RasterStateDepth);
+	//case CULL_MODE_BACK_DEPTH:
+	//	g_ImmediateContext->RSSetState(g_RasterStateDepth);
+	//	break;
 	}
 }
 
@@ -291,6 +313,26 @@ void SetProjectionMatrix( XMMATRIX *ProjectionMatrix )
 	GetDeviceContext()->UpdateSubresource(g_ProjectionBuffer, 0, NULL, &projection, 0, 0);
 }
 
+void SetLightViewMatrix(XMMATRIX* LightViewMatrix)
+{
+	// TODO : Figure out why do matrix transpose here.
+	XMMATRIX lightView;
+	lightView = *LightViewMatrix;
+	lightView = XMMatrixTranspose(lightView);
+
+	GetDeviceContext()->UpdateSubresource(g_LightViewBuffer, 0, NULL, &lightView, 0, 0);
+}
+
+void SetLightProjMatrix(XMMATRIX* LightProjectionMatrix)
+{
+	// TODO : Figure out why do matrix transpose here.
+	XMMATRIX lightProj;
+	lightProj = *LightProjectionMatrix;
+	lightProj = XMMatrixTranspose(lightProj);
+
+	GetDeviceContext()->UpdateSubresource(g_LightProjBuffer, 0, NULL, &lightProj, 0, 0);
+}
+
 void SetMaterial( MATERIAL material )
 {
 	g_Material.Diffuse = material.Diffuse;
@@ -306,6 +348,11 @@ void SetMaterial( MATERIAL material )
 void SetLightBuffer(void)
 {
 	GetDeviceContext()->UpdateSubresource(g_LightBuffer, 0, NULL, &g_Light, 0, 0);
+}
+
+void SetShadowLightBuffer(void)
+{
+	GetDeviceContext()->UpdateSubresource(g_ShadowLightBuffer, 0, NULL, &g_ShadowLight, 0, 0);
 }
 
 void SetLightEnable(BOOL flag)
@@ -327,6 +374,13 @@ void SetLight(int index, LIGHT* pLight)
 	g_Light.Attenuation[index].x = pLight->Attenuation;
 
 	SetLightBuffer();
+}
+
+void SetShadowLight(LIGHT2* pLight)
+{
+	g_ShadowLight.position = pLight->lightPosition;
+
+	SetShadowLightBuffer();
 }
 
 void SetFogBuffer(void)
@@ -365,6 +419,61 @@ void SetShaderCamera(XMFLOAT3 pos)
 	GetDeviceContext()->UpdateSubresource(g_CameraBuffer, 0, NULL, &tmp, 0, 0);
 }
 
+// After rendering to texture, reset target & viewport.
+void ResetRenderer(void)
+{
+	g_ImmediateContext->OMSetRenderTargets(1, &g_RenderTargetView, g_DepthStencilView);
+	g_ImmediateContext->VSSetShader(g_VertexShader, NULL, 0);
+	g_ImmediateContext->PSSetShader(g_PixelShader, NULL, 0);
+	g_ImmediateContext->IASetInputLayout(g_VertexLayout);
+	g_ImmediateContext->PSSetSamplers(0, 1, &g_samplerState);
+	g_ImmediateContext->VSSetConstantBuffers(0, 1, &g_WorldBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(0, 1, &g_WorldBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(1, 1, &g_ViewBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(1, 1, &g_ViewBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(2, 1, &g_ProjectionBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(2, 1, &g_ProjectionBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(3, 1, &g_MaterialBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(3, 1, &g_MaterialBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(4, 1, &g_LightBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(4, 1, &g_LightBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(5, 1, &g_FogBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(5, 1, &g_FogBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(6, 1, &g_FuchiBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(6, 1, &g_FuchiBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(7, 1, &g_CameraBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(7, 1, &g_CameraBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(8, 1, &g_ShadowLightBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(8, 1, &g_ShadowLightBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(9, 1, &g_LightViewBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(9, 1, &g_LightViewBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(10, 1, &g_LightProjBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(10, 1, &g_LightProjBuffer);
+
+	SetLightBuffer();
+
+	// Set Light position
+	D3DXVECTOR3 lightPosition = GetSLPosition();
+	LIGHT2 l2{ {lightPosition.x, lightPosition.y, lightPosition.z}, 0.f };
+	SetShadowLight(&l2);
+
+	// Set Light View & Proj Matrix
+	D3DXMATRIX matrix;
+	GetSLViewMatrix(matrix);
+	SetLightViewMatrix(&d3dmatrix2xmmatrix(matrix));
+	GetSLProjectionMatrix(matrix);
+	SetLightProjMatrix(&d3dmatrix2xmmatrix(matrix));
+
+	D3D11_VIEWPORT vp;
+	vp.Width = (FLOAT)SCREEN_WIDTH;
+	vp.Height = (FLOAT)SCREEN_HEIGHT;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	g_ImmediateContext->RSSetViewports(1, &vp);
+
+}
 
 
 //=============================================================================
@@ -481,15 +590,15 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	g_D3DDevice->CreateRasterizerState(&rasterizerDesc, &g_RasterStateCullCCW);
-	// Depth Bias Mode
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
-	rasterizerDesc.FrontCounterClockwise = false;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.DepthBias = 100000;
-	rasterizerDesc.DepthBiasClamp = 0.0f;
-	rasterizerDesc.SlopeScaledDepthBias = 1.0f;
-	g_D3DDevice->CreateRasterizerState(&rasterizerDesc, &g_RasterStateDepth);
+	//// Depth Bias Mode
+	//rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	//rasterizerDesc.FrontCounterClockwise = false;
+	//rasterizerDesc.DepthClipEnable = true;
+	//rasterizerDesc.DepthBias = 100000;
+	//rasterizerDesc.DepthBiasClamp = 0.0f;
+	//rasterizerDesc.SlopeScaledDepthBias = 1.0f;
+	//g_D3DDevice->CreateRasterizerState(&rasterizerDesc, &g_RasterStateDepth);
 
 
 	// カリングモード設定（CCW）
@@ -577,12 +686,29 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	ID3D11SamplerState* samplerState = NULL;
-	g_D3DDevice->CreateSamplerState( &samplerDesc, &samplerState );
+	g_D3DDevice->CreateSamplerState( &samplerDesc, &g_samplerState );
 
-	g_ImmediateContext->PSSetSamplers( 0, 1, &samplerState );
+	g_ImmediateContext->PSSetSamplers( 0, 1, &g_samplerState );
 
+	// Set clamp sampler state for depth texture.
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	g_D3DDevice->CreateSamplerState(&samplerDesc, &g_samplerStateClamp);
+
+	g_ImmediateContext->PSSetSamplers(1, 1, &g_samplerStateClamp);
 
 	// 頂点シェーダコンパイル・生成
 	ID3DBlob* pErrorBlob;
@@ -687,11 +813,27 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_ImmediateContext->VSSetConstantBuffers(7, 1, &g_CameraBuffer);
 	g_ImmediateContext->PSSetConstantBuffers(7, 1, &g_CameraBuffer);
 
+	//LIGHT2
+	hBufferDesc.ByteWidth = sizeof(LIGHT2);
+	g_D3DDevice->CreateBuffer(&hBufferDesc, NULL, &g_ShadowLightBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(8, 1, &g_ShadowLightBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(8, 1, &g_ShadowLightBuffer);
+
+	// Light View
+	hBufferDesc.ByteWidth = sizeof(XMMATRIX);
+	g_D3DDevice->CreateBuffer(&hBufferDesc, NULL, &g_LightViewBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(9, 1, &g_LightViewBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(9, 1, &g_LightViewBuffer);
+
+	// Light Projection
+	hBufferDesc.ByteWidth = sizeof(XMMATRIX);
+	g_D3DDevice->CreateBuffer(&hBufferDesc, NULL, &g_LightProjBuffer);
+	g_ImmediateContext->VSSetConstantBuffers(10, 1, &g_LightProjBuffer);
+	g_ImmediateContext->PSSetConstantBuffers(10, 1, &g_LightProjBuffer);
 
 	// 入力レイアウト設定
 	g_ImmediateContext->IASetInputLayout( g_VertexLayout );
 
-	// TODO: Set Shader here
 	// シェーダ設定
 	g_ImmediateContext->VSSetShader( g_VertexShader, NULL, 0 );
 	g_ImmediateContext->PSSetShader( g_PixelShader, NULL, 0 );
@@ -704,6 +846,10 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_Light.Flags[0].Type = LIGHT_TYPE_DIRECTIONAL;
 	SetLightBuffer();
 
+	// Initialize Light that generates shadow.
+	ZeroMemory(&g_ShadowLight, sizeof(LIGHT2_CBUFFER));
+	g_ShadowLight.position = XMFLOAT3(0.f, 0.f, 100.f);
+	SetShadowLightBuffer();
 
 	//マテリアル初期化
 	MATERIAL material;
@@ -738,6 +884,10 @@ void UninitRenderer(void)
 	if (g_MaterialBuffer)		g_MaterialBuffer->Release();
 	if (g_LightBuffer)			g_LightBuffer->Release();
 	if (g_FogBuffer)			g_FogBuffer->Release();
+	if (g_FuchiBuffer)			g_FuchiBuffer->Release();
+	if (g_ShadowLightBuffer)	g_ShadowLightBuffer->Release();
+	if (g_LightViewBuffer)		g_LightViewBuffer->Release();
+	if (g_LightProjBuffer)		g_LightProjBuffer->Release();
 
 	if (g_VertexLayout)			g_VertexLayout->Release();
 	if (g_VertexShader)			g_VertexShader->Release();
@@ -748,6 +898,7 @@ void UninitRenderer(void)
 	if (g_SwapChain)			g_SwapChain->Release();
 	if (g_ImmediateContext)		g_ImmediateContext->Release();
 	if (g_D3DDevice)			g_D3DDevice->Release();
+
 }
 
 

@@ -184,7 +184,32 @@ void DrawModel( DX11_MODEL *Model )
 
 }
 
+bool RenderModelToTexture(DX11_MODEL* Model, D3DXMATRIX mtxWorld, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix)
+{
 
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	UINT stride = sizeof(VERTEX_3D);
+	UINT offset = 0;
+	GetDeviceContext()->IASetVertexBuffers(0, 1, &Model->VertexBuffer, &stride, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	GetDeviceContext()->IASetIndexBuffer(Model->IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	for (unsigned short i = 0; i < Model->SubsetNum; i++)
+	{
+		if(!RenderDepthShader(GetDeviceContext(),
+			Model->SubsetArray[i].IndexNum,
+			Model->SubsetArray[i].StartIndex,
+			mtxWorld,
+			lightViewMatrix,
+			lightProjectionMatrix))
+			return false;
+	}
+	return true;
+}
 
 
 
