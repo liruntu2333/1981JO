@@ -37,7 +37,7 @@
 // マクロ定義
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"Engine Camera Rotation:ZC QE Distance : YN Pitch: UM Reset : R"		// ウインドウのキャプション名
+#define WINDOW_NAME		"Engine / Camera :ZC QE YN UM R / Player:↑ → ↓ ←　Space"		// ウインドウのキャプション名
 
 /////////////
 // GLOBALS //
