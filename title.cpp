@@ -34,7 +34,7 @@ static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
 static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static char *g_TexturName[TEXTURE_MAX] = {
-	"data/TEXTURE/bg000.jpg",
+	"data/TEXTURE/galaxy.png",
 	"data/TEXTURE/title_logo.png",
 	"data/TEXTURE/effect000.jpg",
 };
@@ -42,6 +42,7 @@ static char *g_TexturName[TEXTURE_MAX] = {
 
 static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
+static float					g_logoW, g_logoH;			// 幅と高さ
 static XMFLOAT3					g_Pos;						// ポリゴンの座標
 static int						g_TexNo;					// テクスチャ番号
 
@@ -85,6 +86,8 @@ HRESULT InitTitle(void)
 	g_Use   = TRUE;
 	g_w     = TEXTURE_WIDTH;
 	g_h     = TEXTURE_HEIGHT;
+	g_logoW     = TEXTURE_WIDTH_LOGO;
+	g_logoH     = TEXTURE_HEIGHT_LOGO;
 	g_Pos   = XMFLOAT3(g_w/2, g_h/2, 0.0f);
 	g_TexNo = 0;
 
@@ -92,7 +95,7 @@ HRESULT InitTitle(void)
 	flag_alpha = TRUE;
 
 	// BGM再生
-	//PlaySound(SOUND_LABEL_BGM_sample000);
+	PlaySound(SOUND_LABEL_BGM_sample000);
 
 	g_Load = TRUE;
 	return S_OK;
@@ -120,6 +123,7 @@ void UninitTitle(void)
 		}
 	}
 
+
 	g_Load = FALSE;
 }
 
@@ -144,27 +148,30 @@ void UpdateTitle(void)
 		SetFade(FADE_OUT, MODE_GAME);
 	}
 
-	if (flag_alpha == TRUE)
-	{
-		alpha -= 0.02f;
-		if (alpha <= 0.0f)
-		{
-			alpha = 0.0f;
-			flag_alpha = FALSE;
-		}
-	}
-	else
-	{
-		alpha += 0.02f;
-		if (alpha >= 1.0f)
-		{
-			alpha = 1.0f;
-			flag_alpha = TRUE;
-		}
-	}
+	//if (flag_alpha == TRUE)
+	//{
+	//	alpha -= 0.02f;
+	//	if (alpha <= 0.0f)
+	//	{
+	//		alpha = 0.0f;
+	//		flag_alpha = FALSE;
+	//	}
+	//}
+	//else
+	//{
+	//	alpha += 0.02f;
+	//	if (alpha >= 1.0f)
+	//	{
+	//		alpha = 1.0f;
+	//		flag_alpha = TRUE;
+	//	}
+	//}
 
+	g_w += TEXTURE_WIDTH * 0.0001f;
+	g_h += TEXTURE_HEIGHT * 0.0001f;
 
-
+	g_logoW += TEXTURE_WIDTH_LOGO * 0.0005f;
+	g_logoH += TEXTURE_HEIGHT_LOGO * 0.0005f;
 
 
 
@@ -217,7 +224,7 @@ void DrawTitle(void)
 
 		// １枚のポリゴンの頂点とテクスチャ座標を設定
 	//	SetSprite(g_VertexBuffer, g_Pos.x, g_Pos.y, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f);
-		SetSpriteColor(g_VertexBuffer, g_Pos.x, g_Pos.y, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f,
+		SetSpriteColor(g_VertexBuffer, g_Pos.x, g_Pos.y, g_logoW, g_logoH, 0.0f, 0.0f, 1.0f, 1.0f,
 						XMFLOAT4(1.0f, 1.0f, 1.0f, alpha));
 
 		// ポリゴン描画

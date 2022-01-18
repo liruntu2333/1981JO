@@ -35,9 +35,9 @@ static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
 static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static char *g_TexturName[TEXTURE_MAX] = {
-	"data/TEXTURE/bg001.jpg",
+	"data/TEXTURE/earth_at_moon.jpg",
 	"data/TEXTURE/result_logo.png",
-	"data/TEXTURE/number16x32.png",
+	"data/TEXTURE/number.png",
 };
 
 
@@ -86,7 +86,7 @@ HRESULT InitResult(void)
 	g_TexNo = 0;
 
 	// BGM再生
-	//PlaySound(SOUND_LABEL_BGM_sample002);
+	PlaySound(SOUND_LABEL_BGM_sample002);
 
 	g_Load = TRUE;
 	return S_OK;
@@ -207,7 +207,7 @@ void DrawResult(void)
 			float pw = 16*4;			// スコアの表示幅
 			float ph = 32*4;			// スコアの表示高さ
 			float px = 600.0f - i*pw;	// スコアの表示位置X
-			float py = 300.0f;			// スコアの表示位置Y
+			float py = 470.0f;			// スコアの表示位置Y
 
 			float tw = 1.0f / 10;		// テクスチャの幅
 			float th = 1.0f / 1;		// テクスチャの高さ

@@ -220,7 +220,7 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 
 						diffuse = light * Material.Diffuse * Light.Diffuse[i] * color * 3.0f;
 
-						float4 specular = Material.Specular * pow(max(.0f, dot(normalize(inNormal.xyz), half_vec)), 100.f);
+						float4 specular = Material.Specular * pow(max(.0f, dot(normalize(inNormal.xyz), half_vec)), 150.f);
 						//light = 0.5 - 0.5 * light;
 						tempColor = ambient + diffuse + specular;
 					}
@@ -291,7 +291,7 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 								float3 view_dir = normalize(Camera.xyz - inWorldPos.xyz);
 								float3 half_vec = normalize(light_dir + view_dir);
 								float distance = length(inWorldPos.xyz - Light.Position[i].xyz);
-								float4 specular = Material.Specular / pow(distance, 2.f) * pow(max(.0f, dot(inNormal.xyz, half_vec)), 100.f) * 255.f;
+								float4 specular = Material.Specular / pow(distance, 2.f) * pow(max(.0f, dot(inNormal.xyz, half_vec)), 150.f);
 
 								lightDir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
 								light = dot(lightDir, inNormal.xyz);

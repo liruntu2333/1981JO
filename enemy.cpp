@@ -17,14 +17,13 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_ENEMY			"data/MODEL/enemy.obj"		// 読み込むモデル名
-#define	MODEL_SPHERE		"data/MODEL/sphere.obj"
+#define	MODEL_ENEMY			"data/MODEL/cruiser.obj"		// 読み込むモデル名
 
 #define	VALUE_MOVE			(5.0f)						// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)				// 回転量
 
 #define ENEMY_SHADOW_SIZE	(0.4f)						// 影の大きさ
-#define ENEMY_OFFSET_Y		(7.0f)						// エネミーの足元をあわせる
+#define ENEMY_OFFSET_Y		(10.0f)						// エネミーの足元をあわせる
 
 
 //*****************************************************************************
@@ -54,7 +53,7 @@ static INTERPOLATION_DATA move_tbl[] = {	// pos, rot, scl, frame
 //=============================================================================
 HRESULT InitEnemy(void)
 {
-	for (int i = 0; i < MAX_ENEMY - 1; i++)
+	for (int i = 0; i < MAX_ENEMY; i++)
 	{
 		LoadModel(MODEL_ENEMY, &g_Enemy[i].model);
 		g_Enemy[i].load = TRUE;
@@ -80,16 +79,6 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].use = TRUE;			// TRUE:生きてる
 
 	}
-
-	LoadModel(MODEL_SPHERE, &g_Enemy[MAX_ENEMY - 1].model);
-	g_Enemy[MAX_ENEMY - 1].load = TRUE;
-
-	g_Enemy[MAX_ENEMY - 1].pos = XMFLOAT3(-50.0f + MAX_ENEMY * 30.0f, .0f, 20.0f);
-	g_Enemy[MAX_ENEMY - 1].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_Enemy[MAX_ENEMY - 1].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
-
-	g_Enemy[MAX_ENEMY - 1].spd = 0.0f;			// 移動スピードクリア
-	g_Enemy[MAX_ENEMY - 1].size = ENEMY_SIZE;	// 当たり判定の大きさ
 
 	// モデルのディフューズを保存しておく。色変え対応の為。
 	GetModelDiffuse(&g_Enemy[0].model, &g_Enemy[0].diffuse[0]);

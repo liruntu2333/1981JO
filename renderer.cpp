@@ -315,7 +315,7 @@ void SetProjectionMatrix( XMMATRIX *ProjectionMatrix )
 
 void SetLightViewMatrix(XMMATRIX* LightViewMatrix)
 {
-	// TODO : Figure out why do matrix transpose here.
+	// TODO : Figure out why do matrix transpose here. -- CASE CLOSED
 	XMMATRIX lightView;
 	lightView = *LightViewMatrix;
 	lightView = XMMatrixTranspose(lightView);
@@ -325,7 +325,7 @@ void SetLightViewMatrix(XMMATRIX* LightViewMatrix)
 
 void SetLightProjMatrix(XMMATRIX* LightProjectionMatrix)
 {
-	// TODO : Figure out why do matrix transpose here.
+	// TODO : Figure out why do matrix transpose here. -- CASE CLOSED
 	XMMATRIX lightProj;
 	lightProj = *LightProjectionMatrix;
 	lightProj = XMMatrixTranspose(lightProj);

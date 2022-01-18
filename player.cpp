@@ -19,14 +19,14 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	MODEL_PLAYER		"data/MODEL/cone.obj"			// 読み込むモデル名
-#define	MODEL_PLAYER_PARTS	"data/MODEL/torus.obj"			// 読み込むモデル名
+#define	MODEL_PLAYER		"data/MODEL/carrier.obj"			// 読み込むモデル名
+#define	MODEL_PLAYER_PARTS	"data/MODEL/frigate.obj"			// 読み込むモデル名
 
 #define	VALUE_MOVE			(2.0f)							// 移動量
 #define	VALUE_ROTATE		(XM_PI * 0.02f)					// 回転量
 
 #define PLAYER_SHADOW_SIZE	(1.0f)							// 影の大きさ
-#define PLAYER_OFFSET_Y		(7.0f)							// プレイヤーの足元をあわせる
+#define PLAYER_OFFSET_Y		(10.0f)							// プレイヤーの足元をあわせる
 
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
@@ -49,16 +49,16 @@ static BOOL			g_Load = FALSE;
 // プレイヤーの階層アニメーションデータ
 // プレイヤーの頭を左右に動かしているアニメデータ
 static INTERPOLATION_DATA move_tbl_right[] = {	// pos, rot, scl, frame
-	{ XMFLOAT3(20.0f, 15.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),      XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
-	{ XMFLOAT3(20.0f, 15.0f, 0.0f), XMFLOAT3(XM_PI / 2, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 180 },
-	{ XMFLOAT3(20.0f, 15.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),      XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
+	{ XMFLOAT3(20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),      XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
+	{ XMFLOAT3(20.0f, 4.0f, 0.0f), XMFLOAT3(0.0f, XM_PI / 4, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 180 },
+	{ XMFLOAT3(20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),      XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
 
 };
 
 static INTERPOLATION_DATA move_tbl_left[] = {	// pos, rot, scl, frame
-	{ XMFLOAT3(-20.0f, 10.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),         XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
-	{ XMFLOAT3(-20.0f, 10.0f, 0.0f), XMFLOAT3(XM_PI / 2, 0.0f, 0.0f),    XMFLOAT3(1.0f, 1.0f, 1.0f), 180 },
-	{ XMFLOAT3(-20.0f, 10.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),         XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
+	{ XMFLOAT3(-20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),         XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
+	{ XMFLOAT3(-20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, XM_PI / 2),    XMFLOAT3(1.0f, 1.0f, 1.0f), 180 },
+	{ XMFLOAT3(-20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),         XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
 
 };
 
@@ -72,7 +72,7 @@ HRESULT InitPlayer(void)
 	LoadModel(MODEL_PLAYER, &g_Player.model);
 	g_Player.load = TRUE;
 
-	g_Player.pos = { 0.0f, PLAYER_OFFSET_Y, 0.0f };
+	g_Player.pos = { 130.0f, PLAYER_OFFSET_Y, 100.0f };
 	g_Player.rot = { 0.0f, 0.0f, 0.0f };
 	g_Player.scl = { 1.0f, 1.0f, 1.0f };
 
@@ -410,7 +410,7 @@ bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightPro
 	XMMATRIX mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-	XMMATRIX mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y, g_Player.rot.z);
+	XMMATRIX mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y + XM_PI, g_Player.rot.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
 	XMMATRIX mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);

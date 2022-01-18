@@ -43,7 +43,7 @@ static int							g_TexNo;				// テクスチャ番号
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/bullet00.png",
+	"data/TEXTURE/missile.png",
 };
 
 static BOOL							g_Load = FALSE;

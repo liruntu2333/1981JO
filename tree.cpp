@@ -58,7 +58,7 @@ static BOOL					g_Load = FALSE;
 
 static char *g_TextureName[TEXTURE_MAX] =
 {
-	"data/TEXTURE/tree001.png",
+	"data/TEXTURE/monolith.png",
 	"data/TEXTURE/tree002.png",
 	"data/TEXTURE/tree003.png",
 	"data/TEXTURE/tree004.png",
@@ -76,7 +76,7 @@ HRESULT InitTree(void)
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		D3DX11CreateShaderResourceViewFromFile(GetDevice(),
-			g_TextureName[i],
+			g_TextureName[0],
 			NULL,
 			NULL,
 			&g_Texture[i],

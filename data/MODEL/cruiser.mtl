@@ -1,0 +1,71 @@
+newmtl cruiser:Default_Material
+illum 4
+Kd 0.80 0.80 0.80
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 1.00 1.00 1.00
+Ns 0.06
+newmtl cruiser:_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd 34490282.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
+newmtl cruiser:a0326c1d_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd a0326c1d.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
+newmtl cruiser:a05928_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd 71a05928.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
+newmtl cruiser:acd898fa_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd acd898fa.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
+newmtl cruiser:d4101197_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd d4101197.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
+newmtl cruiser:e9cccadb_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd e9cccadb.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
+newmtl cruiser:ef8f70_dds
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.17 0.17 0.17
+Tf 1.00 1.00 1.00
+map_Kd 43ef8f70.png
+Ni 1.00
+Ks 0.73 0.73 0.73
+Ns 0.06
