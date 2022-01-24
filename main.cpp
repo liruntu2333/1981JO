@@ -12,7 +12,6 @@
 #include "model.h"
 #include "player.h"
 #include "enemy.h"
-#include "shadow.h"
 #include "light.h"
 #include "meshfield.h"
 #include "meshwall.h"
@@ -28,7 +27,6 @@
 #include "result.h"
 #include "fade.h"
 
-#include "shadowshader.h"
 #include "lightforshadow.h"
 #include "depthshader.h"
 #include "rendertexture.h"
@@ -44,8 +42,8 @@
 /////////////
 static const float SCREEN_DEPTH = 10000.0f;
 static const float SCREEN_NEAR = 1.0f;
-static const int SHADOWMAP_WIDTH = 4096;
-static const int SHADOWMAP_HEIGHT = 4096;
+static const int SHADOWMAP_WIDTH = 10000;
+static const int SHADOWMAP_HEIGHT = 10000;
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -71,7 +69,6 @@ char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
 #endif
 
 int	g_Mode = MODE_TITLE;					// 起動時の画面を設定
-
 
 //=============================================================================
 // メイン関数
@@ -236,9 +233,6 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	InitRenderer(hInstance, hWnd, bWindow);
 
-	// Initialize Shadow Shader
-	InitShadowShader(GetDevice(), hWnd);
-
 	// Initialize Depth Shader
 	InitDepthShader(GetDevice(), hWnd);
 
@@ -249,7 +243,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// Initialize the shadow light object.
 	{
-		SetSLPosition(0.f, 800.0f, 0.f);
+		SetSLPosition(0.f, 700.0f, 0.f);
 		SetSLLookAt(0.0f, 0.0f, 0.0f);
 		GenerateSLViewMatrix();
 		GenerateSLProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
@@ -313,8 +307,6 @@ void Uninit(void)
 	// レンダラーの終了処理
 	UninitRenderer();
 
-	//Shut down Shadow Shader
-	ShutdownSS();
 	// Shut down Depth Shader
 	ShutdownDS();
 	// Shut down Render to texture helper

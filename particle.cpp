@@ -9,7 +9,6 @@
 #include "input.h"
 #include "camera.h"
 #include "model.h"
-#include "shadow.h"
 #include "particle.h"
 #include "player.h"
 
@@ -174,25 +173,10 @@ void UpdateParticle(void)
 				g_aParticle[nCntParticle].move.y -= 0.25f;
 				g_aParticle[nCntParticle].move.z += (0.0f - g_aParticle[nCntParticle].move.z) * 0.015f;
 
-#ifdef DISP_SHADOW
-				if(g_aParticle[nCntParticle].nIdxShadow != -1)
-				{// âeégópíÜ
-					float colA;
-
-					// âeÇÃà íuê›íË
-					SetPositionShadow(g_aParticle[nCntParticle].nIdxShadow, XMFLOAT3(g_aParticle[nCntParticle].pos.x, 0.1f, g_aParticle[nCntParticle].pos.z));
-
-					// âeÇÃêFÇÃê›íË
-					colA = g_aParticle[nCntParticle].material.Diffuse.w;
-					SetColorShadow(g_aParticle[nCntParticle].nIdxShadow, XMFLOAT4(0.5f, 0.5f, 0.5f, colA));
-				}
-#endif
-
 				g_aParticle[nCntParticle].nLife--;
 				if(g_aParticle[nCntParticle].nLife <= 0)
 				{
 					g_aParticle[nCntParticle].bUse = FALSE;
-					ReleaseShadow(g_aParticle[nCntParticle].nIdxShadow);
 					g_aParticle[nCntParticle].nIdxShadow = -1;
 				}
 				else
@@ -418,15 +402,6 @@ int SetParticle(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT4 col, float fSizeX, float f
 			g_aParticle[nCntParticle].bUse = TRUE;
 
 			nIdxParticle = nCntParticle;
-
-#ifdef DISP_SHADOW
-			// âeÇÃê›íË
-			g_aParticle[nCntParticle].nIdxShadow = CreateShadow(XMFLOAT3(pos.x, 0.1f, pos.z), 0.8f, 0.8f);		// âeÇÃê›íË
-			if(g_aParticle[nCntParticle].nIdxShadow != -1)
-			{
-				SetColorShadow(g_aParticle[nCntParticle].nIdxShadow, XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-			}
-#endif
 
 			break;
 		}

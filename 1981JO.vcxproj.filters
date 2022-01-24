@@ -30,9 +30,6 @@
     <ClInclude Include="score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shadow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -88,9 +85,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shadowshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lightforshadow.h">
@@ -155,9 +149,6 @@
     <ClCompile Include="score.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shadow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -173,9 +164,6 @@
     <ClCompile Include="bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shadowshader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lightforshadow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -187,21 +175,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="HLSL\ShadowInstance_VS.hlsl">
-      <Filter>shader\ShadowEffect</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\ShadowObject_VS.hlsl">
-      <Filter>shader\ShadowEffect</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\Shadow_PS.hlsl">
-      <Filter>shader\ShadowEffect</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\shadowVS.hlsl">
-      <Filter>shader\ShadowEffect</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\shadowPS.hlsl">
-      <Filter>shader\ShadowEffect</Filter>
-    </FxCompile>
     <FxCompile Include="shader.hlsl">
       <Filter>shader</Filter>
     </FxCompile>

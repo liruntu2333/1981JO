@@ -4,7 +4,7 @@
 #ifndef _RENDERTEXTURE_H_
 #define _RENDERTEXTURE_H_
 
-
+#pragma warning(disable:4005)
 //////////////
 // INCLUDES //
 //////////////

@@ -6,7 +6,6 @@
 //=============================================================================
 #include "main.h"
 #include "renderer.h"
-#include "shadow.h"
 #include "bullet.h"
 #include "sound.h"
 
@@ -129,9 +128,6 @@ void UpdateBullet(void)
 			g_Bullet[i].pos.x -= sinf(g_Bullet[i].rot.y) * g_Bullet[i].spd;
 			g_Bullet[i].pos.z -= cosf(g_Bullet[i].rot.y) * g_Bullet[i].spd;
 
-			// 影の位置設定
-			SetPositionShadow(g_Bullet[i].shadowIdx, XMFLOAT3(g_Bullet[i].pos.x, 0.1f, g_Bullet[i].pos.z));
-
 
 			// フィールドの外に出たら弾を消す処理
 			if (g_Bullet[i].pos.x < MAP_LEFT
@@ -140,7 +136,6 @@ void UpdateBullet(void)
 				|| g_Bullet[i].pos.z > MAP_TOP)
 			{
 				g_Bullet[i].use = FALSE;
-				ReleaseShadow(g_Bullet[i].shadowIdx);
 			}
 
 		}
@@ -269,9 +264,6 @@ int SetBullet(XMFLOAT3 pos, XMFLOAT3 rot)
 			g_Bullet[nCntBullet].rot = rot;
 			g_Bullet[nCntBullet].scl = { 1.0f, 1.0f, 1.0f };
 			g_Bullet[nCntBullet].use = TRUE;
-
-			// 影の設定
-			g_Bullet[nCntBullet].shadowIdx = CreateShadow(g_Bullet[nCntBullet].pos, 0.5f, 0.5f);
 
 			nIdxBullet = nCntBullet;
 

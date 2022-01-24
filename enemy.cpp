@@ -10,7 +10,6 @@
 #include "input.h"
 #include "model.h"
 #include "enemy.h"
-#include "shadow.h"
 #include "depthshader.h"
 #include "meshfield.h"
 
@@ -70,7 +69,6 @@ HRESULT InitEnemy(void)
 
 		XMFLOAT3 pos = g_Enemy[i].pos;
 		pos.y -= (ENEMY_OFFSET_Y - 0.1f);
-		g_Enemy[i].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE, ENEMY_SHADOW_SIZE);
 
 		g_Enemy[i].move_time = 0.0f;	// 線形補間用のタイマーをクリア
 		g_Enemy[i].tbl_adr = NULL;		// 再生するアニメデータの先頭アドレスをセット
@@ -85,7 +83,6 @@ HRESULT InitEnemy(void)
 
 	XMFLOAT3 pos = g_Enemy[MAX_ENEMY - 1].pos;
 	pos.y -= (ENEMY_OFFSET_Y - 0.1f);
-	g_Enemy[MAX_ENEMY - 1].shadowIdx = CreateShadow(pos, ENEMY_SHADOW_SIZE, ENEMY_SHADOW_SIZE);
 
 	g_Enemy[MAX_ENEMY - 1].move_time = 0.0f;	// 線形補間用のタイマーをクリア
 	g_Enemy[MAX_ENEMY - 1].tbl_adr = NULL;		// 再生するアニメデータの先頭アドレスをセット
@@ -175,10 +172,6 @@ void UpdateEnemy(void)
 			bool ans = RayHitField(g_Enemy[i].pos, &hitPosition, &normal);
 			g_Enemy[i].pos.y = hitPosition.y + ENEMY_OFFSET_Y;
 
-			// 影もプレイヤーの位置に合わせる
-			XMFLOAT3 pos = g_Enemy[i].pos;
-			pos.y -= (ENEMY_OFFSET_Y - 0.1f);
-			SetPositionShadow(g_Enemy[i].shadowIdx, pos);
 		}
 	}
 

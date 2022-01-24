@@ -10,7 +10,6 @@
 #include "camera.h"
 #include "debugproc.h"
 #include "player.h"
-#include "shadow.h"
 #include "light.h"
 #include "bullet.h"
 #include "meshfield.h"
@@ -80,13 +79,6 @@ HRESULT InitPlayer(void)
 	g_Player.size = PLAYER_SIZE;	// 当たり判定の大きさ
 
 	g_Player.use = TRUE;
-
-	// ここでプレイヤー用の影を作成している
-	XMFLOAT3 pos = g_Player.pos;
-	pos.y -= (PLAYER_OFFSET_Y - 0.1f);
-	g_Player.shadowIdx = CreateShadow(pos, PLAYER_SHADOW_SIZE, PLAYER_SHADOW_SIZE);
-	//          ↑
-	//        このメンバー変数が生成した影のIndex番号
 
 	// 階層アニメーション用の初期化処理
 	g_Player.parent = NULL;			// 本体（親）なのでNULLを入れる
@@ -208,12 +200,6 @@ void UpdatePlayer(void)
 	hitPosition.y = g_Player.pos.y - PLAYER_OFFSET_Y;	// 外れた時用に初期化しておく
 	bool ans = RayHitField(g_Player.pos, &hitPosition, &normal);
 	g_Player.pos.y = hitPosition.y + PLAYER_OFFSET_Y;
-
-
-	// 影もプレイヤーの位置に合わせる
-	XMFLOAT3 pos = g_Player.pos;
-	pos.y -= (PLAYER_OFFSET_Y - 0.1f);
-	SetPositionShadow(g_Player.shadowIdx, pos);
 
 	// 弾発射処理
 	if (GetKeyboardTrigger(DIK_SPACE))

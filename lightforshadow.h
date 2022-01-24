@@ -4,7 +4,7 @@
 #ifndef _LIGHTFORSHADOW_H_
 #define _LIGHTFORSHADOW_H_
 
-
+#pragma warning(disable:4005)
 //////////////
 // INCLUDES //
 //////////////

@@ -17,7 +17,6 @@
 #include "enemy.h"
 #include "meshfield.h"
 #include "meshwall.h"
-#include "shadow.h"
 #include "tree.h"
 #include "bullet.h"
 #include "score.h"
@@ -55,9 +54,6 @@ HRESULT InitGame(void)
 
 	// フィールドの初期化
 	InitMeshField(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 100, 100, 13.0f, 13.0f);
-
-	// ライトを有効化	// 影の初期化処理
-	InitShadow();
 
 	// プレイヤーの初期化
 	InitPlayer();
@@ -131,10 +127,6 @@ void UninitGame(void)
 
 	// プレイヤーの終了処理
 	UninitPlayer();
-
-	// 影の終了処理
-	UninitShadow();
-
 }
 
 //=============================================================================
@@ -180,9 +172,6 @@ void UpdateGame(void)
 
 	// パーティクルの更新処理
 	//UpdateParticle();
-
-	// 影の更新処理
-	UpdateShadow();
 
 	// 当たり判定処理
 	CheckHit();
@@ -319,7 +308,6 @@ void CheckHit(void)
 		{
 			// 敵キャラクターは倒される
 			enemy[i].use = FALSE;
-			ReleaseShadow(enemy[i].shadowIdx);
 
 			// スコアを足す
 			AddScore(100);
@@ -346,11 +334,9 @@ void CheckHit(void)
 			{
 				// 当たったから未使用に戻す
 				bullet[i].use = FALSE;
-				ReleaseShadow(bullet[i].shadowIdx);
 
 				// 敵キャラクターは倒される
 				enemy[j].use = FALSE;
-				ReleaseShadow(enemy[j].shadowIdx);
 
 				// スコアを足す
 				AddScore(10);
