@@ -243,7 +243,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// Initialize the shadow light object.
 	{
-		SetSLPosition(0.f, 700.0f, 0.f);
+		SetSLPosition(0.f, 800.0f, 0.f);
 		SetSLLookAt(0.0f, 0.0f, 0.0f);
 		GenerateSLViewMatrix();
 		GenerateSLProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);

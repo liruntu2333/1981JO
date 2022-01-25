@@ -189,9 +189,6 @@ void DrawGame0(void)
 	// 地面の描画処理
 	DrawMeshField();
 
-	// 影の描画処理
-	//DrawShadow();
-
 	// エネミーの描画処理
 	DrawEnemy();
 

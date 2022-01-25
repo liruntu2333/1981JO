@@ -71,15 +71,18 @@ void UninitCamera(void)
 //=============================================================================
 void UpdateCamera(void)
 {
+	// Camera update by using mouse.
+	g_Camera.rot.y += GetMouseX() * 0.003f;
+	g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
+	g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
 
+	g_Camera.rot.x -= GetMouseY() * 0.003f;
+	g_Camera.pos.y = g_Camera.at.y - sinf(g_Camera.rot.x) * g_Camera.len;
+	g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.x) * g_Camera.len;
 
 	if (GetKeyboardPress(DIK_Z))
 	{// 視点旋回「左」
 		g_Camera.rot.y += VALUE_ROTATE_CAMERA;
-		if (g_Camera.rot.y > XM_PI)
-		{
-			g_Camera.rot.y -= XM_PI * 2.0f;
-		}
 
 		g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
 		g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
@@ -88,10 +91,6 @@ void UpdateCamera(void)
 	if (GetKeyboardPress(DIK_C))
 	{// 視点旋回「右」
 		g_Camera.rot.y -= VALUE_ROTATE_CAMERA;
-		if (g_Camera.rot.y < -XM_PI)
-		{
-			g_Camera.rot.y += XM_PI * 2.0f;
-		}
 
 		g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
 		g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
@@ -110,10 +109,6 @@ void UpdateCamera(void)
 	if (GetKeyboardPress(DIK_Q))
 	{// 注視点旋回「左」
 		g_Camera.rot.y -= VALUE_ROTATE_CAMERA;
-		if (g_Camera.rot.y < -XM_PI)
-		{
-			g_Camera.rot.y += XM_PI * 2.0f;
-		}
 
 		g_Camera.at.x = g_Camera.pos.x + sinf(g_Camera.rot.y) * g_Camera.len;
 		g_Camera.at.z = g_Camera.pos.z + cosf(g_Camera.rot.y) * g_Camera.len;
@@ -122,10 +117,6 @@ void UpdateCamera(void)
 	if (GetKeyboardPress(DIK_E))
 	{// 注視点旋回「右」
 		g_Camera.rot.y += VALUE_ROTATE_CAMERA;
-		if (g_Camera.rot.y > XM_PI)
-		{
-			g_Camera.rot.y -= XM_PI * 2.0f;
-		}
 
 		g_Camera.at.x = g_Camera.pos.x + sinf(g_Camera.rot.y) * g_Camera.len;
 		g_Camera.at.z = g_Camera.pos.z + cosf(g_Camera.rot.y) * g_Camera.len;
@@ -164,9 +155,14 @@ void UpdateCamera(void)
 
 
 
+	//g_Camera.rot.x -= (g_mouseX - preX) * 0.01f;
+	//g_Camera.rot.x += g_Camera.rot.x > XM_PI ? -XM_2PI : XM_2PI;
+	//g_Camera.rot.x += g_Camera.rot.x < 0 ? XM_2PI : -XM_2PI;
+	//g_Camera.pos.y = g_Camera.at.y - cosf(g_Camera.rot.x) * g_Camera.len;
+	//g_Camera.pos.z = g_Camera.at.z - sinf(g_Camera.rot.x) * g_Camera.len;
 
 #ifdef _DEBUG	// デバッグ情報を表示する
-	PrintDebugProc("Camera:ZC QE TB YN UM R\n");
+	PrintDebugProc("Camera:ZC QE TB YN UM R RotY: %f\n", g_Camera.rot.y);
 #endif
 }
 

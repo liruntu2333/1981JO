@@ -150,22 +150,22 @@ void UpdatePlayer(void)
 	CAMERA *cam = GetCamera();
 
 	// à⁄ìÆÇ≥ÇπÇøÇ·Ç§
-	if (GetKeyboardPress(DIK_LEFT) || IsButtonPressed(0, BUTTON_LEFT))
+	if (GetKeyboardPress(DIK_A) || IsButtonPressed(0, BUTTON_LEFT))
 	{	// ç∂Ç÷à⁄ìÆ
 		g_Player.spd = VALUE_MOVE;
 		g_Player.dir = XM_PI / 2;
 	}
-	if (GetKeyboardPress(DIK_RIGHT) || IsButtonPressed(0, BUTTON_RIGHT))
+	if (GetKeyboardPress(DIK_D) || IsButtonPressed(0, BUTTON_RIGHT))
 	{	// âEÇ÷à⁄ìÆ
 		g_Player.spd = VALUE_MOVE;
 		g_Player.dir = -XM_PI / 2;
 	}
-	if (GetKeyboardPress(DIK_UP) || IsButtonPressed(0, BUTTON_UP))
+	if (GetKeyboardPress(DIK_W) || IsButtonPressed(0, BUTTON_UP))
 	{	// è„Ç÷à⁄ìÆ
 		g_Player.spd = VALUE_MOVE;
 		g_Player.dir = XM_PI;
 	}
-	if (GetKeyboardPress(DIK_DOWN) || IsButtonPressed(0, BUTTON_DOWN))
+	if (GetKeyboardPress(DIK_S) || IsButtonPressed(0, BUTTON_DOWN))
 	{	// â∫Ç÷à⁄ìÆ
 		g_Player.spd = VALUE_MOVE;
 		g_Player.dir = 0.0f;
