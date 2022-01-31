@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "rendertexture.h"
 
+#pragma comment (lib, "d3dx9.lib")
 
 static ID3D11Texture2D* g_renderTargetTexture = 0;
 static ID3D11RenderTargetView* g_renderTargetView = 0;
