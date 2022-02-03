@@ -49,9 +49,9 @@ static VERTEX_3D	*g_Vertex = NULL;
 // ”g‚Ì‚‚³ = sin( -Œo‰ßŠÔ * ü”g” + ‹——£ * ‹——£•â³ ) * U•
 static XMFLOAT3		g_Center;					// ”g‚Ì”­¶êŠ
 static float		g_Time = 0.0f;				// ”g‚ÌŒo‰ßŠÔ
-static float		g_wave_frequency  = 2.0f;	// ”g‚Ìü”g”
-static float		g_wave_correction = 0.02f;	// ”g‚Ì‹——£•â³
-static float		g_wave_amplitude  = 20.0f;	// ”g‚ÌU•
+static float		g_wave_frequency  = 0.0f;	// ”g‚Ìü”g”
+static float		g_wave_correction = 0.0f;	// ”g‚Ì‹——£•â³
+static float		g_wave_amplitude  = 0.0f;	// ”g‚ÌU•
 
 static BOOL			g_Load = FALSE;
 
@@ -124,11 +124,16 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 
 			// ”g‚Ì‚‚³‚ğAsinŠÖ”‚Å“¾‚é
 			// ”g‚Ì‚‚³@= sin( -Œo‰ßŠÔ * ü”g” + ‹——£ * ‹——£•â³ ) * U•
-			g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = sinf(-g_Time * g_wave_frequency + len * g_wave_correction) * g_wave_amplitude;
-			//g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = 0.0f;
+			g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = cosf(-g_Time * g_wave_frequency + len * g_wave_correction) * g_wave_amplitude;
 
 			// –@ü‚Ìİ’è
-			g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal = XMFLOAT3(0.0f, 1.0, 0.0f);
+			// In XY plane
+			XMVECTOR nor = { sinf(dx * g_wave_correction ),
+				abs(cosf(len * g_wave_correction)), 
+				sinf(dz * g_wave_correction) };
+			XMVector3Normalize(nor);
+			XMStoreFloat3(&g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal, nor);
+			//g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal = XMFLOAT3(0.0f, 1.0, 0.0f);
 
 			// ”½ËŒõ‚Ìİ’è
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -301,6 +306,7 @@ void UpdateMeshField(void)
 //=============================================================================
 void DrawMeshField(void)
 {
+	SetFuchi(0);
 	// ’¸“_ƒoƒbƒtƒ@İ’è
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
@@ -315,7 +321,10 @@ void DrawMeshField(void)
 	// ƒ}ƒeƒŠƒAƒ‹İ’è
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
+	material.Ambient = { 2.0f, 2.0f, 2.0f, 1.0f };
 	material.Diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+	material.Specular = { 0.0f, 0.0f, 0.0f, 1.0f };
+
 	SetMaterial(material);
 
 	// ƒeƒNƒXƒ`ƒƒİ’è

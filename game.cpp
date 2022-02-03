@@ -53,7 +53,7 @@ HRESULT InitGame(void)
 	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
 	// フィールドの初期化
-	InitMeshField(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 100, 100, 13.0f, 13.0f);
+	InitMeshField(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), 200, 200, 6.4f, 6.4f);
 
 	// プレイヤーの初期化
 	InitPlayer();

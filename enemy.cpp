@@ -40,9 +40,9 @@ static BOOL				g_Load = FALSE;
 
 static INTERPOLATION_DATA move_tbl[] = {	// pos, rot, scl, frame
 	{ XMFLOAT3(   0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*2 },
-	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*1 },
-	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y, 200.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*0.5f },
-	{ XMFLOAT3(   0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*2 },
+	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, XM_PIDIV2, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*1 },
+	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y, 200.0f), XMFLOAT3(0.0f, XM_PI, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*1 },
+	{ XMFLOAT3(   0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, XM_2PI, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*2 },
 
 };
 
@@ -172,6 +172,28 @@ void UpdateEnemy(void)
 			bool ans = RayHitField(g_Enemy[i].pos, &hitPosition, &normal);
 			g_Enemy[i].pos.y = hitPosition.y + ENEMY_OFFSET_Y;
 
+
+			XMVECTOR vx, nvx, up;
+			XMVECTOR quat;
+			float len, angle;
+
+			// ２つのベクトルの外積を取って任意の回転軸を求める
+			g_Enemy[i].upVector = normal;
+			up = { 0.0f, 1.0f, 0.0f, 0.0f };
+			vx = XMVector3Cross(up, XMLoadFloat3(&g_Enemy[i].upVector));
+
+			// 求めた回転軸からクォータニオンを作り出す
+			nvx = XMVector3Length(vx);
+			XMStoreFloat(&len, nvx);
+			nvx = XMVector3Normalize(vx);
+			angle = asinf(len);
+			quat = XMQuaternionRotationNormal(nvx, angle);
+
+			// 前回のクォータニオンから今回のクォータニオンまでの回転を滑らかにする
+			quat = XMQuaternionSlerp(XMLoadFloat4(&g_Enemy[i].quaternion), quat, 0.05f);
+
+			// 今回のクォータニオンの結果を保存する
+			XMStoreFloat4(&g_Enemy[i].quaternion, quat);
 		}
 	}
 
@@ -187,7 +209,7 @@ void DrawEnemy(void)
 	// カリング無効
 	SetRasterizeState(CULL_MODE_NONE);
 
-	SetFuchi(0);
+	SetFuchi(1);
 
 	for (int i = 0; i < MAX_ENEMY; i++)
 	{
@@ -204,6 +226,9 @@ void DrawEnemy(void)
 		mtxRot = XMMatrixRotationRollPitchYaw(g_Enemy[i].rot.x, g_Enemy[i].rot.y + XM_PI, g_Enemy[i].rot.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
+		XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Enemy[i].quaternion));
+		mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
+
 		// 移動を反映
 		mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
@@ -216,8 +241,6 @@ void DrawEnemy(void)
 		if (i == MAX_ENEMY - 1) SetFuchi(1);
 		// モデル描画
 		DrawModel(&g_Enemy[i].model);
-
-		SetFuchi(0);
 	}
 	SetFuchi(0);
 	// カリング設定を戻す
@@ -246,6 +269,9 @@ bool RenderEnemyWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProj
 
 		XMMATRIX mtxRot = XMMatrixRotationRollPitchYaw(g_Enemy[i].rot.x, g_Enemy[i].rot.y + XM_PI, g_Enemy[i].rot.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+
+		XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Enemy[i].quaternion));
+		mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
 
 		XMMATRIX mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);

@@ -37,6 +37,8 @@ struct ENEMY
 	int					tbl_size;			// 登録したテーブルのレコード総数
 	float				move_time;			// 実行時間
 
+	XMFLOAT4			quaternion;	// クォータニオン
+	XMFLOAT3			upVector;	// 自分が立っている所
 };
 
 //*****************************************************************************

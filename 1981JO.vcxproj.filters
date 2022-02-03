@@ -96,6 +96,12 @@
     <ClInclude Include="depthshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EffectsHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
@@ -172,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="depthshader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

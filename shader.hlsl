@@ -207,8 +207,6 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 				float3 lightDir;
 				float light;
 
-				ambient = Light.Ambient[0] * Material.Ambient;
-
 				if (Light.Flags[i].y == 1)
 				{
 					if (Light.Flags[i].x == 1)
@@ -218,10 +216,10 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 						float3 half_vec = normalize(lightDir + view_dir);
 						light = dot(lightDir, normalize(inNormal.xyz));
 
-						diffuse = light * Material.Diffuse * Light.Diffuse[i] * color * 3.0f;
+						ambient = Light.Ambient[0] * Material.Ambient;
+						diffuse = light * Material.Diffuse * Light.Diffuse[i] * color;
+						specular = Material.Specular * pow(max(.0f, dot(normalize(inNormal.xyz), half_vec)), 150.f);
 
-						float4 specular = Material.Specular * pow(max(.0f, dot(normalize(inNormal.xyz), half_vec)), 150.f);
-						//light = 0.5 - 0.5 * light;
 						tempColor = ambient + diffuse + specular;
 					}
 					else if (Light.Flags[i].x == 2)
@@ -248,8 +246,15 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 			color = outColor;
 			color.a = inDiffuse.a * Material.Diffuse.a;
 		}
-		else
+
+		if (fuchi == 0) // Render object with diffuse texture + depth texture.
 		{
+			float4 tempColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+			float4 outColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+			ambient = Light.Ambient[0] * Material.Ambient;
+			outColor += ambient * color;
+
 			// Set the bias value for fixing the floating point precision issues.
 			bias = 0.0001f;
 
@@ -272,10 +277,62 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 
 				// Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this pixel.
 				// If the light is in front of the object then light the pixel, if not then shadow this pixel since an object (occluder) is casting a shadow on it.
-				if (lightDepthValue < depthValue)
+				if (lightDepthValue > depthValue)
 				{
-					float4 tempColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-					float4 outColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+					//float4 tempColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+					//float4 outColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+					//for (int i = 0; i < 5; i++)
+					//{
+					//	float3 lightDir;
+					//	float light;
+
+					//	if (Light.Flags[i].y == 1)
+					//	{
+					//		if (Light.Flags[i].x == 1)
+					//		{
+
+					//			float3 light_dir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
+					//			float3 view_dir = normalize(Camera.xyz - inWorldPos.xyz);
+					//			float3 half_vec = normalize(light_dir + view_dir);
+					//			float distance = length(inWorldPos.xyz - Light.Position[i].xyz);
+					//			float4 specular = Material.Specular / pow(distance, 2.f) * pow(max(.0f, dot(inNormal.xyz, half_vec)), 150.f);
+
+					//			lightDir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
+					//			light = dot(lightDir, inNormal.xyz);
+
+					//			tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
+
+					//			lightDir = normalize(Light.Direction[i].xyz);
+					//			light = dot(lightDir, inNormal.xyz);
+
+					//			light = 0.5 - 0.5 * light;
+					//			tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
+					//			tempColor.xyz = tempColor.xyz + specular.xyz;
+					//		}
+					//		else if (Light.Flags[i].x == 2)
+					//		{
+					//			lightDir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
+					//			light = dot(lightDir, inNormal.xyz);
+
+					//			tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
+
+					//			float distance = length(inWorldPos - Light.Position[i]);
+
+					//			float att = saturate((Light.Attenuation[i].x - distance) / Light.Attenuation[i].x);
+					//			tempColor *= att;
+					//		}
+					//		else
+					//		{
+					//			tempColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+					//		}
+
+					//		outColor += tempColor;
+					//	}
+					//}
+
+					//color = outColor;
+					//color.a = inDiffuse.a * Material.Diffuse.a;
 
 					for (int i = 0; i < 5; i++)
 					{
@@ -286,24 +343,15 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 						{
 							if (Light.Flags[i].x == 1)
 							{
-
-								float3 light_dir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
+								lightDir = normalize(-Light.Direction[i].xyz);
 								float3 view_dir = normalize(Camera.xyz - inWorldPos.xyz);
-								float3 half_vec = normalize(light_dir + view_dir);
-								float distance = length(inWorldPos.xyz - Light.Position[i].xyz);
-								float4 specular = Material.Specular / pow(distance, 2.f) * pow(max(.0f, dot(inNormal.xyz, half_vec)), 150.f);
+								float3 half_vec = normalize(lightDir + view_dir);
+								light = dot(lightDir, normalize(inNormal.xyz));
 
-								lightDir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
-								light = dot(lightDir, inNormal.xyz);
+								diffuse = light * Material.Diffuse * Light.Diffuse[i] * color;
+								specular = Material.Specular * pow(max(.0f, dot(normalize(inNormal.xyz), half_vec)), 150.f);
 
-								tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
-
-								lightDir = normalize(Light.Direction[i].xyz);
-								light = dot(lightDir, inNormal.xyz);
-
-								light = 0.5 - 0.5 * light;
-								tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
-								tempColor.xyz = tempColor.xyz + specular.xyz;
+								tempColor += (diffuse + specular);
 							}
 							else if (Light.Flags[i].x == 2)
 							{
@@ -325,10 +373,10 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 							outColor += tempColor;
 						}
 					}
-
-					color = outColor;
-					color.a = inDiffuse.a * Material.Diffuse.a;
 				}
+
+				color = outColor;
+				color.a = inDiffuse.a * Material.Diffuse.a;
 			}
 			else // Current pixel out of view of light, set the traditional lighting.
 			{
