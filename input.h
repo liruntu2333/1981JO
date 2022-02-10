@@ -6,7 +6,6 @@
 //=============================================================================
 #pragma once
 
-
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -15,7 +14,6 @@
 #define	USE_KEYBOARD										// 宣言するとキーボードで操作可能になる
 #define	USE_MOUSE											// 宣言するとマウスで操作可能になる
 #define	USE_PAD												// 宣言するとパッドで操作可能になる
-
 
 /* game pad情報 */
 #define BUTTON_UP		0x00000001l	// 方向キー上(.IY<0)
@@ -33,7 +31,6 @@
 #define BUTTON_START	0x00001000l	// ＳＴＡＲＴボタン(.rgbButtons[8]&0x80)
 #define BUTTON_M		0x00002000l	// Ｍボタン(.rgbButtons[9]&0x80)
 #define GAMEPADMAX		4			// 同時に接続するジョイパッドの最大数をセット
-
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -60,7 +57,5 @@ long GetMouseY(void);               // マウスがY方向に動いた相対値
 long GetMouseZ(void);               // マウスホイールが動いた相対値
 
 //---------------------------- game pad
-BOOL IsButtonPressed(int padNo,DWORD button);
-BOOL IsButtonTriggered(int padNo,DWORD button);
-
-
+BOOL IsButtonPressed(int padNo, DWORD button);
+BOOL IsButtonTriggered(int padNo, DWORD button);

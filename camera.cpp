@@ -20,9 +20,8 @@
 //#define	POS_Y_CAM		(200.0f)		// カメラの初期位置(Y座標)
 //#define	POS_Z_CAM		(-400.0f)		// カメラの初期位置(Z座標)
 
-
 #define	VIEW_ANGLE		(XMConvertToRadians(45.0f))						// ビュー平面の視野角
-#define	VIEW_ASPECT		((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)	// ビュー平面のアスペクト比	
+#define	VIEW_ASPECT		((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT)	// ビュー平面のアスペクト比
 #define	VIEW_NEAR_Z		(10.0f)											// ビュー平面のNearZ値
 #define	VIEW_FAR_Z		(10000.0f)										// ビュー平面のFarZ値
 
@@ -42,8 +41,8 @@ static int				g_ViewPortType = TYPE_FULL_SCREEN;
 void InitCamera(void)
 {
 	g_Camera.pos = { POS_X_CAM, POS_Y_CAM, POS_Z_CAM };
-	g_Camera.at  = { 0.0f, 0.0f, 0.0f };
-	g_Camera.up  = { 0.0f, 1.0f, 0.0f };
+	g_Camera.at = { 0.0f, 0.0f, 0.0f };
+	g_Camera.up = { 0.0f, 1.0f, 0.0f };
 	g_Camera.rot = { 0.0f, 0.0f, 0.0f };
 
 	// 視点と注視点の距離を計算
@@ -51,20 +50,17 @@ void InitCamera(void)
 	vx = g_Camera.pos.x - g_Camera.at.x;
 	vz = g_Camera.pos.z - g_Camera.at.z;
 	g_Camera.len = sqrtf(vx * vx + vz * vz);
-	
+
 	// ビューポートタイプの初期化
 	g_ViewPortType = TYPE_FULL_SCREEN;
 }
-
 
 //=============================================================================
 // カメラの終了処理
 //=============================================================================
 void UninitCamera(void)
 {
-
 }
-
 
 //=============================================================================
 // カメラの更新処理
@@ -153,8 +149,6 @@ void UpdateCamera(void)
 		InitCamera();
 	}
 
-
-
 	//g_Camera.rot.x -= (g_mouseX - preX) * 0.01f;
 	//g_Camera.rot.x += g_Camera.rot.x > XM_PI ? -XM_2PI : XM_2PI;
 	//g_Camera.rot.x += g_Camera.rot.x < 0 ? XM_2PI : -XM_2PI;
@@ -166,11 +160,10 @@ void UpdateCamera(void)
 #endif
 }
 
-
 //=============================================================================
 // カメラの更新
 //=============================================================================
-void SetCamera(void) 
+void SetCamera(void)
 {
 	// ビューマトリックス設定
 	XMMATRIX mtxView;
@@ -182,7 +175,6 @@ void SetCamera(void)
 	mtxInvView = XMMatrixInverse(nullptr, mtxView);
 	XMStoreFloat4x4(&g_Camera.mtxInvView, mtxInvView);
 
-
 	// プロジェクションマトリックス設定
 	XMMATRIX mtxProjection;
 	mtxProjection = XMMatrixPerspectiveFovLH(VIEW_ANGLE, VIEW_ASPECT, VIEW_NEAR_Z, VIEW_FAR_Z);
@@ -193,11 +185,10 @@ void SetCamera(void)
 	SetShaderCamera(g_Camera.pos);
 }
 
-
 //=============================================================================
 // カメラの取得
 //=============================================================================
-CAMERA *GetCamera(void) 
+CAMERA* GetCamera(void)
 {
 	return &g_Camera;
 }
@@ -207,7 +198,7 @@ CAMERA *GetCamera(void)
 //=============================================================================
 void SetViewPort(int type)
 {
-	ID3D11DeviceContext *g_ImmediateContext = GetDeviceContext();
+	ID3D11DeviceContext* g_ImmediateContext = GetDeviceContext();
 	D3D11_VIEWPORT vp;
 
 	g_ViewPortType = type;
@@ -259,20 +250,14 @@ void SetViewPort(int type)
 		vp.TopLeftX = 0;
 		vp.TopLeftY = (FLOAT)SCREEN_HEIGHT / 2;
 		break;
-
-
 	}
 	g_ImmediateContext->RSSetViewports(1, &vp);
-
 }
-
 
 int GetViewPortType(void)
 {
 	return g_ViewPortType;
 }
-
-
 
 // カメラの視点と注視点をセット
 void SetCameraAT(XMFLOAT3 pos)
@@ -284,4 +269,3 @@ void SetCameraAT(XMFLOAT3 pos)
 	g_Camera.pos.x = g_Camera.at.x - sinf(g_Camera.rot.y) * g_Camera.len;
 	g_Camera.pos.z = g_Camera.at.z - cosf(g_Camera.rot.y) * g_Camera.len;
 }
-

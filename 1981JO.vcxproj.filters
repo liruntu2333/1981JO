@@ -184,14 +184,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shader.hlsl">
-      <Filter>shader</Filter>
-    </FxCompile>
     <FxCompile Include="HLSL\depthVS.hlsl">
       <Filter>shader\ShadowEffect</Filter>
     </FxCompile>
     <FxCompile Include="HLSL\depthPS.hlsl">
       <Filter>shader\ShadowEffect</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\shader.hlsl">
+      <Filter>shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

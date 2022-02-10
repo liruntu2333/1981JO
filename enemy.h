@@ -13,7 +13,6 @@
 
 #define	ENEMY_SIZE		(5.0f)				// 当たり判定の大きさ
 
-
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
@@ -32,8 +31,8 @@ struct ENEMY
 	float				spd;				// 移動スピード
 	float				size;				// 当たり判定の大きさ
 	int					shadowIdx;			// 影のインデックス番号
-	
-	INTERPOLATION_DATA	*tbl_adr;			// アニメデータのテーブル先頭アドレス
+
+	INTERPOLATION_DATA* tbl_adr;			// アニメデータのテーブル先頭アドレス
 	int					tbl_size;			// 登録したテーブルのレコード総数
 	float				move_time;			// 実行時間
 
@@ -49,6 +48,6 @@ void UninitEnemy(void);
 void UpdateEnemy(void);
 void DrawEnemy(void);
 
-ENEMY *GetEnemy(void);
+ENEMY* GetEnemy(void);
 
 bool RenderEnemyWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix);

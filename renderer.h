@@ -10,7 +10,6 @@
 // Include
 //
 
-
 //*********************************************************
 // マクロ定義
 //*********************************************************
@@ -45,7 +44,6 @@ enum RASTERIZE_STATE
 	CULL_MODE_NUM
 };
 
-
 //*********************************************************
 // 構造体
 //*********************************************************
@@ -53,10 +51,10 @@ enum RASTERIZE_STATE
 // 頂点構造体
 struct VERTEX_3D
 {
-    XMFLOAT3	Position;
-    XMFLOAT3	Normal;
-    XMFLOAT4	Diffuse;
-    XMFLOAT2	TexCoord;
+	XMFLOAT3	Position;
+	XMFLOAT3	Normal;
+	XMFLOAT4	Diffuse;
+	XMFLOAT2	TexCoord;
 };
 
 // マテリアル構造体
@@ -93,7 +91,6 @@ struct LIGHT2 {
 	float		padding;
 };
 
-
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -103,22 +100,22 @@ void UninitRenderer(void);
 void Clear(void);
 void Present(void);
 
-ID3D11Device *GetDevice( void );
-ID3D11DeviceContext *GetDeviceContext( void );
+ID3D11Device* GetDevice(void);
+ID3D11DeviceContext* GetDeviceContext(void);
 
-void SetDepthEnable( BOOL Enable );
+void SetDepthEnable(BOOL Enable);
 void SetBlendState(BLEND_MODE bm);
 void SetRasterizeState(RASTERIZE_STATE cm);
 void SetAlphaTestEnable(BOOL flag);
 
-void SetWorldViewProjection2D( void );
-void SetWorldMatrix( XMMATRIX *WorldMatrix );
-void SetViewMatrix( XMMATRIX *ViewMatrix );
-void SetProjectionMatrix( XMMATRIX *ProjectionMatrix );
+void SetWorldViewProjection2D(void);
+void SetWorldMatrix(XMMATRIX* WorldMatrix);
+void SetViewMatrix(XMMATRIX* ViewMatrix);
+void SetProjectionMatrix(XMMATRIX* ProjectionMatrix);
 void SetLightViewMatrix(XMMATRIX* LightViewMatrix);
 void SetLightProjMatrix(XMMATRIX* LightProjectionMatrix);
 
-void SetMaterial( MATERIAL material );
+void SetMaterial(MATERIAL material);
 
 void SetLightEnable(BOOL flag);
 void SetLight(int index, LIGHT* light);

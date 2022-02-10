@@ -29,11 +29,9 @@
 
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
-
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-
 
 //*****************************************************************************
 // グローバル変数
@@ -44,24 +42,19 @@ static PLAYER		g_Parts[PLAYER_PARTS_MAX];		// プレイヤーのパーツ用
 
 static BOOL			g_Load = FALSE;
 
-
 // プレイヤーの階層アニメーションデータ
 // プレイヤーの頭を左右に動かしているアニメデータ
 static INTERPOLATION_DATA move_tbl_right[] = {	// pos, rot, scl, frame
 	{ XMFLOAT3(20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),      XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
 	{ XMFLOAT3(20.0f, 4.0f, 0.0f), XMFLOAT3(0.0f, XM_PI / 4, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 180 },
 	{ XMFLOAT3(20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),      XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
-
 };
 
 static INTERPOLATION_DATA move_tbl_left[] = {	// pos, rot, scl, frame
 	{ XMFLOAT3(-20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),         XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
 	{ XMFLOAT3(-20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, XM_PI / 2),    XMFLOAT3(1.0f, 1.0f, 1.0f), 180 },
 	{ XMFLOAT3(-20.0f, 8.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),         XMFLOAT3(1.0f, 1.0f, 1.0f), 60 },
-
 };
-
-
 
 //=============================================================================
 // 初期化処理
@@ -108,15 +101,15 @@ HRESULT InitPlayer(void)
 	}
 
 	g_Parts[0].use = TRUE;
-	g_Parts[0].parent   = &g_Player;		// 親をセット
-	g_Parts[0].tbl_adr  = move_tbl_right;	// 再生するアニメデータの先頭アドレスをセット
+	g_Parts[0].parent = &g_Player;		// 親をセット
+	g_Parts[0].tbl_adr = move_tbl_right;	// 再生するアニメデータの先頭アドレスをセット
 	g_Parts[0].tbl_size = sizeof(move_tbl_right) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
 	g_Parts[0].load = 1;
 	LoadModel(MODEL_PLAYER_PARTS, &g_Parts[0].model);
 
 	g_Parts[1].use = TRUE;
-	g_Parts[1].parent   = &g_Player;		// 親をセット
-	g_Parts[1].tbl_adr  = move_tbl_left;	// 再生するアニメデータの先頭アドレスをセット
+	g_Parts[1].parent = &g_Player;		// 親をセット
+	g_Parts[1].tbl_adr = move_tbl_left;	// 再生するアニメデータの先頭アドレスをセット
 	g_Parts[1].tbl_size = sizeof(move_tbl_left) / sizeof(INTERPOLATION_DATA);		// 再生するアニメデータのレコード数をセット
 	g_Parts[1].load = 1;
 	LoadModel(MODEL_PLAYER_PARTS, &g_Parts[1].model);
@@ -147,7 +140,7 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	CAMERA *cam = GetCamera();
+	CAMERA* cam = GetCamera();
 
 	// 移動させちゃう
 	if (GetKeyboardPress(DIK_A) || IsButtonPressed(0, BUTTON_LEFT))
@@ -171,7 +164,6 @@ void UpdatePlayer(void)
 		g_Player.dir = 0.0f;
 	}
 
-
 #ifdef _DEBUG
 	if (GetKeyboardPress(DIK_R))
 	{
@@ -180,7 +172,6 @@ void UpdatePlayer(void)
 		g_Player.spd = 0.0f;
 	}
 #endif
-
 
 	//	// Key入力があったら移動処理する
 	if (g_Player.spd > 0.0f)
@@ -191,8 +182,6 @@ void UpdatePlayer(void)
 		g_Player.pos.x -= sinf(g_Player.rot.y) * g_Player.spd;
 		g_Player.pos.z -= cosf(g_Player.rot.y) * g_Player.spd;
 	}
-
-
 
 	// レイキャストして足元の高さを求める
 	XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
@@ -209,12 +198,11 @@ void UpdatePlayer(void)
 
 	g_Player.spd *= 0.5f;
 
-
 	// 階層アニメーション
 	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
 	{
 		// 使われているなら処理する
-		if ((g_Parts[i].use == TRUE)&&(g_Parts[i].tbl_adr != NULL))
+		if ((g_Parts[i].use == TRUE) && (g_Parts[i].tbl_adr != NULL))
 		{
 			// 移動処理
 			int		index = (int)g_Parts[i].move_time;
@@ -247,11 +235,8 @@ void UpdatePlayer(void)
 			XMVECTOR s0 = XMLoadFloat3(&g_Parts[i].tbl_adr[index + 0].scl);	// 現在のScale
 			XMVECTOR scl = s1 - s0;
 			XMStoreFloat3(&g_Parts[i].scl, s0 + scl * time);
-
 		}
 	}
-
-
 
 	//{	// ポイントライトのテスト
 	//	LIGHT *light = GetLightData(1);
@@ -265,7 +250,6 @@ void UpdatePlayer(void)
 	//	light->Enable = TRUE;
 	//	SetLightData(1, light);
 	//}
-
 
 	//////////////////////////////////////////////////////////////////////
 	// 姿勢制御
@@ -293,8 +277,6 @@ void UpdatePlayer(void)
 	// 今回のクォータニオンの結果を保存する
 	XMStoreFloat4(&g_Player.quaternion, quat);
 
-
-
 #ifdef _DEBUG	// デバッグ情報を表示する
 	PrintDebugProc("Player:↑ → ↓ ←　Space\n");
 	PrintDebugProc("Player:X:%f Y:%f Z:%f\n", g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
@@ -306,7 +288,6 @@ void UpdatePlayer(void)
 //=============================================================================
 void DrawPlayer(void)
 {
-
 	// カリング無効
 	SetRasterizeState(CULL_MODE_NONE);
 
@@ -326,7 +307,7 @@ void DrawPlayer(void)
 	//// クォータニオンを反映
 	XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Player.quaternion));
 	mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
-	
+
 	// 移動を反映
 	mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
@@ -339,8 +320,6 @@ void DrawPlayer(void)
 	SetFuchi(1);
 	// モデル描画
 	DrawModel(&g_Player.model);
-
-
 
 	// パーツの階層アニメーション
 	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
@@ -375,11 +354,9 @@ void DrawPlayer(void)
 		// ワールドマトリックスの設定
 		SetWorldMatrix(&mtxWorld);
 
-
 		SetFuchi(1);
 		// モデル描画
 		DrawModel(&g_Parts[i].model);
-
 	}
 
 	SetFuchi(0);
@@ -405,9 +382,8 @@ bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightPro
 	XMMATRIX mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-
-	if(!RenderModelToTexture(&g_Player.model, 
-		xmmatrix2d3dmatrix(mtxWorld), 
+	if (!RenderModelToTexture(&g_Player.model,
+		xmmatrix2d3dmatrix(mtxWorld),
 		lightViewMatrix, lightProjectionMatrix))
 		return false;
 
@@ -443,7 +419,7 @@ bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightPro
 //=============================================================================
 // プレイヤー情報を取得
 //=============================================================================
-PLAYER *GetPlayer(void)
+PLAYER* GetPlayer(void)
 {
 	return &g_Player;
 }

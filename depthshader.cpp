@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "depthshader.h"
 
-#pragma comment (lib, "d3dx9.lib")	
+#pragma comment (lib, "d3dx9.lib")
 
 ////////////////////////
 // STRUCT DECLARATION //
@@ -20,7 +20,6 @@ static ID3D11PixelShader* g_pixelShader = 0;
 static ID3D11InputLayout* g_layout = 0;
 static ID3D11Buffer* g_matrixBuffer = 0;
 
-
 bool InitializeDepthShader(ID3D11Device*, HWND, const char*, const char*);
 void ShutdownDepthShader();
 void OutputDepthShaderErrorMessage(ID3D10Blob*, HWND, const char*);
@@ -32,7 +31,6 @@ bool InitDepthShader(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-
 	// Initialize the vertex and pixel shaders.
 	result = InitializeDepthShader(device, hwnd, "HLSL\\depthVS.hlsl", "HLSL\\depthPS.hlsl");
 	if (!result)
@@ -43,7 +41,6 @@ bool InitDepthShader(ID3D11Device* device, HWND hwnd)
 	return true;
 }
 
-
 void ShutdownDS()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
@@ -52,13 +49,11 @@ void ShutdownDS()
 	return;
 }
 
-
 bool RenderDepthShader(ID3D11DeviceContext* deviceContext, int indexCount, int startIndexLoc,
- D3DXMATRIX worldMatrix,
+	D3DXMATRIX worldMatrix,
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
 {
 	bool result;
-
 
 	// Set the shader parameters that it will use for rendering.
 	result = SetDepthShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
@@ -73,7 +68,6 @@ bool RenderDepthShader(ID3D11DeviceContext* deviceContext, int indexCount, int s
 	return true;
 }
 
-
 bool InitializeDepthShader(ID3D11Device* device, HWND hwnd, const char* vsFilename, const char* psFilename)
 {
 	HRESULT result;
@@ -83,7 +77,6 @@ bool InitializeDepthShader(ID3D11Device* device, HWND hwnd, const char* vsFilena
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
-
 
 	// Initialize the pointers this function will use to null.
 	errorMessage = 0;
@@ -187,7 +180,6 @@ bool InitializeDepthShader(ID3D11Device* device, HWND hwnd, const char* vsFilena
 	return true;
 }
 
-
 void ShutdownDepthShader()
 {
 	// Release the matrix constant buffer.
@@ -221,13 +213,11 @@ void ShutdownDepthShader()
 	return;
 }
 
-
 void OutputDepthShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const char* shaderFilename)
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
 	ofstream fout;
-
 
 	// Get a pointer to the error message text buffer.
 	compileErrors = (char*)(errorMessage->GetBufferPointer());
@@ -257,14 +247,12 @@ void OutputDepthShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const ch
 	return;
 }
 
-
 bool SetDepthShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
-
 
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
@@ -297,7 +285,6 @@ bool SetDepthShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX wor
 
 	return true;
 }
-
 
 void RenderDepthShader(ID3D11DeviceContext* deviceContext, int indexCount, int startIndexLoc)
 {

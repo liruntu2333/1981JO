@@ -6,17 +6,17 @@
 // CONSTANT BUFFERS //
 //////////////////////
 
-cbuffer WorldBuffer : register( b0 )
+cbuffer WorldBuffer : register(b0)
 {
 	matrix World;
 }
 
-cbuffer ViewBuffer : register( b1 )
+cbuffer ViewBuffer : register(b1)
 {
 	matrix View;
 }
 
-cbuffer ProjectionBuffer : register( b2 )
+cbuffer ProjectionBuffer : register(b2)
 {
 	matrix Projection;
 }
@@ -33,7 +33,7 @@ struct MATERIAL
 	float		Dummy[2];//16byte境界用
 };
 
-cbuffer MaterialBuffer : register( b3 )
+cbuffer MaterialBuffer : register(b3)
 {
 	MATERIAL	Material;
 }
@@ -51,7 +51,7 @@ struct LIGHT
 	int			Dummy[3];//16byte境界用
 };
 
-cbuffer LightBuffer : register( b4 )
+cbuffer LightBuffer : register(b4)
 {
 	LIGHT		Light;
 }
@@ -65,7 +65,7 @@ struct FOG
 };
 
 // フォグ用バッファ
-cbuffer FogBuffer : register( b5 )
+cbuffer FogBuffer : register(b5)
 {
 	FOG			Fog;
 };
@@ -76,7 +76,6 @@ cbuffer Fuchi : register(b6)
 	int			fuchi;
 	int			fill[3];
 };
-
 
 cbuffer CameraBuffer : register(b7)
 {
@@ -102,18 +101,18 @@ cbuffer LightProjectionBuffer : register(b10) // TODO : Set buffers in VS, PS --
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
-void VertexShaderPolygon(	in  float4 inPosition		: POSITION0,
-							in  float4 inNormal		: NORMAL0,
-							in  float4 inDiffuse		: COLOR0,
-							in  float2 inTexCoord		: TEXCOORD0,
+void VertexShaderPolygon(in  float4 inPosition		: POSITION0,
+	in  float4 inNormal : NORMAL0,
+	in  float4 inDiffuse : COLOR0,
+	in  float2 inTexCoord : TEXCOORD0,
 
-							out float4 outPosition	: SV_POSITION,
-							out float4 outNormal		: NORMAL0,
-							out float2 outTexCoord	: TEXCOORD0,
-							out float4 outDiffuse		: COLOR0,
-							out float4 outWorldPos    : POSITION0,
-							out float4 outLightViewPosition : TEXCOORD1,	// TODO : add parameters to PSlayout ---- NO NEED
-							out float3 outLightPos		:	TEXCOORD2)		// TODO : add parameters to PSlayout ---- NO NEED
+	out float4 outPosition : SV_POSITION,
+	out float4 outNormal : NORMAL0,
+	out float2 outTexCoord : TEXCOORD0,
+	out float4 outDiffuse : COLOR0,
+	out float4 outWorldPos : POSITION0,
+	out float4 outLightViewPosition : TEXCOORD1,	// TODO : add parameters to PSlayout ---- NO NEED
+	out float3 outLightPos : TEXCOORD2)		// TODO : add parameters to PSlayout ---- NO NEED
 {
 	matrix wvp;
 	wvp = mul(World, View);
@@ -143,33 +142,30 @@ void VertexShaderPolygon(	in  float4 inPosition		: POSITION0,
 	outLightPos = normalize(outLightPos);
 }
 
-
-
 //////////////
 // TEXTURES //
 //////////////
-Texture2D		g_Texture : register( t0 );
+Texture2D		g_Texture : register(t0);
 Texture2D		g_depthMapTexture : register(t1);		// TODO : add depthTexture to render resource ---- DONE
 
 ///////////////////
 // SAMPLE STATES //
 ///////////////////
-SamplerState	g_SamplerState		: register( s0 );
-SamplerState	g_SamplerStateClamp : register( s1 );	// TODO: add sampler state clamp for shadow map in render ---- DONE
-
+SamplerState	g_SamplerState		: register(s0);
+SamplerState	g_SamplerStateClamp : register(s1);	// TODO: add sampler state clamp for shadow map in render ---- DONE
 
 ////////////////////////////////////////////////////////////////////////////////
 // Pixel Shader
 ////////////////////////////////////////////////////////////////////////////////
-void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
-							in  float4 inNormal		: NORMAL0,
-							in  float2 inTexCoord		: TEXCOORD0,
-							in  float4 inDiffuse		: COLOR0,
-							in  float4 inWorldPos      : POSITION0,
-							in	float4 inLightViewPosition : TEXCOORD1,		// TODO : add parameters to PSlayout ---- NO NEED
-							in	float3 inLightPos		:	TEXCOORD2,		// TODO : add parameters to PSlayout ---- NO NEED
+void PixelShaderPolygon(in  float4 inPosition		: SV_POSITION,
+	in  float4 inNormal : NORMAL0,
+	in  float2 inTexCoord : TEXCOORD0,
+	in  float4 inDiffuse : COLOR0,
+	in  float4 inWorldPos : POSITION0,
+	in	float4 inLightViewPosition : TEXCOORD1,		// TODO : add parameters to PSlayout ---- NO NEED
+	in	float3 inLightPos : TEXCOORD2,		// TODO : add parameters to PSlayout ---- NO NEED
 
-							out float4 outDiffuse		: SV_Target )
+	out float4 outDiffuse : SV_Target)
 {
 	float bias;
 	float4 color;
@@ -265,7 +261,6 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 			// Determine if the projected coordinates are in the 0 to 1 range.  If so then this pixel is in the view of the light.
 			if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
 			{
-
 				// Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
 				depthValue = g_depthMapTexture.Sample(g_SamplerStateClamp, projectTexCoord).r;
 
@@ -291,7 +286,6 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 					//	{
 					//		if (Light.Flags[i].x == 1)
 					//		{
-
 					//			float3 light_dir = normalize(Light.Position[i].xyz - inWorldPos.xyz);
 					//			float3 view_dir = normalize(Camera.xyz - inWorldPos.xyz);
 					//			float3 half_vec = normalize(light_dir + view_dir);
@@ -382,7 +376,6 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 			{
 			}
 		}
-
 	}
 
 	////tempColor.xyz = normalize(inNormal.xyz);
@@ -404,15 +397,14 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 	//light = dot(lightDir, inNormal.xyz);
 
 	//tempColor = color * Material.Diffuse * light * Light.Diffuse[i];
-	
 
 	//フォグ
 	if (Fog.Enable == 1)
 	{
-		float z = inPosition.z*inPosition.w;
+		float z = inPosition.z * inPosition.w;
 		float f = (Fog.Distance.y - z) / (Fog.Distance.y - Fog.Distance.x);
 		f = saturate(f);
-		outDiffuse = f * color + (1 - f)*Fog.FogColor;
+		outDiffuse = f * color + (1 - f) * Fog.FogColor;
 		outDiffuse.a = color.a;
 		clip(outDiffuse.a - .1f);
 	}
@@ -423,5 +415,4 @@ void PixelShaderPolygon(	in  float4 inPosition		: SV_POSITION,
 	}
 	outDiffuse = color;
 	clip(outDiffuse.a - .1f);
-
 }

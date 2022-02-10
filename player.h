@@ -13,7 +13,6 @@
 
 #define	PLAYER_SIZE		(5.0f)				// 当たり判定の大きさ
 
-
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
@@ -35,18 +34,16 @@ struct PLAYER
 	BOOL				use;
 
 	// 階層アニメーション用のメンバー変数
-	INTERPOLATION_DATA	*tbl_adr;	// アニメデータのテーブル先頭アドレス
+	INTERPOLATION_DATA* tbl_adr;	// アニメデータのテーブル先頭アドレス
 	int					tbl_size;	// 登録したテーブルのレコード総数
 	float				move_time;	// 実行時間
 
 	// 親は、NULL、子供は親のアドレスを入れる
-	PLAYER				*parent;	// 自分が親ならNULL、自分が子供なら親のplayerアドレス
+	PLAYER* parent;	// 自分が親ならNULL、自分が子供なら親のplayerアドレス
 
 	// クォータニオン
 	XMFLOAT4			quaternion;	// クォータニオン
 	XMFLOAT3			upVector;	// 自分が立っている所
-
-
 };
 
 //*****************************************************************************
@@ -57,6 +54,6 @@ void UninitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
 
-PLAYER *GetPlayer(void);
+PLAYER* GetPlayer(void);
 
 bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix);

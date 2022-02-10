@@ -9,7 +9,6 @@
 #include "bullet.h"
 #include "sound.h"
 
-
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -20,11 +19,9 @@
 
 #define	BULLET_SPEED		(5.0f)			// 弾の移動スピード
 
-
 //*****************************************************************************
 // 構造体定義
 //*****************************************************************************
-
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -34,19 +31,18 @@ HRESULT MakeVertexBullet(void);
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer					*g_VertexBuffer = NULL;	// 頂点バッファ
-static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer* g_VertexBuffer = nullptr;	// 頂点バッファ
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static BULLET						g_Bullet[MAX_BULLET];	// 木ワーク
 static int							g_TexNo;				// テクスチャ番号
 
-static char *g_TextureName[TEXTURE_MAX] =
+static char* g_TextureName[TEXTURE_MAX] =
 {
 	"data/TEXTURE/missile.png",
 };
 
 static BOOL							g_Load = FALSE;
-
 
 //=============================================================================
 // 初期化処理
@@ -82,7 +78,6 @@ HRESULT InitBullet(void)
 		g_Bullet[nCntBullet].fWidth = BULLET_WIDTH;
 		g_Bullet[nCntBullet].fHeight = BULLET_HEIGHT;
 		g_Bullet[nCntBullet].use = FALSE;
-
 	}
 
 	g_Load = TRUE;
@@ -119,7 +114,6 @@ void UninitBullet(void)
 //=============================================================================
 void UpdateBullet(void)
 {
-
 	for (int i = 0; i < MAX_BULLET; i++)
 	{
 		if (g_Bullet[i].use)
@@ -127,7 +121,6 @@ void UpdateBullet(void)
 			// 弾の移動処理
 			g_Bullet[i].pos.x -= sinf(g_Bullet[i].rot.y) * g_Bullet[i].spd;
 			g_Bullet[i].pos.z -= cosf(g_Bullet[i].rot.y) * g_Bullet[i].spd;
-
 
 			// フィールドの外に出たら弾を消す処理
 			if (g_Bullet[i].pos.x < MAP_LEFT
@@ -137,10 +130,8 @@ void UpdateBullet(void)
 			{
 				g_Bullet[i].use = FALSE;
 			}
-
 		}
 	}
-
 }
 
 //=============================================================================
@@ -185,7 +176,6 @@ void DrawBullet(void)
 
 			XMStoreFloat4x4(&g_Bullet[i].mtxWorld, mtxWorld);
 
-
 			// マテリアル設定
 			SetMaterial(g_Bullet[i].material);
 
@@ -199,10 +189,7 @@ void DrawBullet(void)
 
 	// ライティングを有効に
 	SetLightEnable(TRUE);
-
 }
-
-
 
 //=============================================================================
 // 頂点情報の作成
@@ -230,9 +217,9 @@ HRESULT MakeVertexBullet(void)
 
 	// 頂点座標の設定
 	vertex[0].Position = { -fWidth / 2.0f, 0.0f,  fHeight / 2.0f };
-	vertex[1].Position = {  fWidth / 2.0f, 0.0f,  fHeight / 2.0f };
+	vertex[1].Position = { fWidth / 2.0f, 0.0f,  fHeight / 2.0f };
 	vertex[2].Position = { -fWidth / 2.0f, 0.0f, -fHeight / 2.0f };
-	vertex[3].Position = {  fWidth / 2.0f, 0.0f, -fHeight / 2.0f };
+	vertex[3].Position = { fWidth / 2.0f, 0.0f, -fHeight / 2.0f };
 
 	// 拡散光の設定
 	vertex[0].Diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -282,8 +269,7 @@ int SetBullet(XMFLOAT3 pos, XMFLOAT3 rot)
 //=============================================================================
 // 弾の取得
 //=============================================================================
-BULLET *GetBullet(void)
+BULLET* GetBullet(void)
 {
 	return &(g_Bullet[0]);
 }
-

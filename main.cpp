@@ -35,7 +35,7 @@
 // マクロ定義
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"Engine / Camera :ZC QE YN UM R / Player:↑ → ↓ ←　Space"		// ウインドウのキャプション名
+#define WINDOW_NAME		"1981JO Engine"		// ウインドウのキャプション名
 
 /////////////
 // GLOBALS //
@@ -60,7 +60,6 @@ bool RenderSceneToTexture();
 //*****************************************************************************
 long g_MouseX = 0;
 long g_MouseY = 0;
-
 
 #ifdef _DEBUG
 int		g_CountFPS;							// FPSカウンタ
@@ -100,7 +99,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	};
 	HWND		hWnd;
 	MSG			msg;
-	
+
 	// ウィンドウクラスの登録
 	RegisterClassEx(&wcex);
 
@@ -118,7 +117,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		NULL);
 
 	// 初期化処理(ウィンドウを作成してから行う)
-	if(FAILED(Init(hInstance, hWnd, TRUE)))
+	if (FAILED(Init(hInstance, hWnd, TRUE)))
 	{
 		return -1;
 	}
@@ -131,13 +130,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	// ウインドウの表示(初期化処理の後に呼ばないと駄目)
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-	
+
 	// メッセージループ
-	while(1)
+	while (1)
 	{
-		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			if(msg.message == WM_QUIT)
+			if (msg.message == WM_QUIT)
 			{// PostQuitMessage()が呼ばれたらループ終了
 				break;
 			}
@@ -147,7 +146,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
-        }
+		}
 		else
 		{
 			dwCurrentTime = timeGetTime();
@@ -199,14 +198,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 //=============================================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch(message)
+	switch (message)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 
 	case WM_KEYDOWN:
-		switch(wParam)
+		switch (wParam)
 		{
 		case VK_ESCAPE:
 			DestroyWindow(hWnd);
@@ -269,13 +268,11 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// サウンドの初期化
 	InitSound(hWnd);
 
-
 	// ライトを有効化
 	SetLightEnable(TRUE);
 
 	// 背面ポリゴンをカリング
 	SetRasterizeState(CULL_MODE_BACK);
-
 
 	// フェードの初期化
 	InitFade();
@@ -293,7 +290,6 @@ void Uninit(void)
 {
 	// 終了のモードをセット
 	SetMode(MODE_MAX);
-
 
 	// サウンド終了処理
 	UninitSound();
@@ -345,8 +341,6 @@ void Update(void)
 
 	// フェード処理の更新
 	UpdateFade();
-
-
 }
 
 //=============================================================================
@@ -384,7 +378,7 @@ void Draw(void)
 	case MODE_GAME:			// ゲーム画面の描画
 		// Implement RenderSceneToTexture() from tutorial40, GraphicsClass::RenderSceneToTexture()
 		// before rendering the gameobj, render enemy & player to the texture for shadow shader
-		if(!RenderSceneToTexture()) 
+		if (!RenderSceneToTexture())
 		{
 #ifdef _DEBUG
 			PrintDebugProc("render depth texture failed\n");
@@ -426,18 +420,15 @@ void Draw(void)
 	Present();
 }
 
-
 long GetMousePosX(void)
 {
 	return g_MouseX;
 }
 
-
 long GetMousePosY(void)
 {
 	return g_MouseY;
 }
-
 
 #ifdef _DEBUG
 char* GetDebugStr(void)
@@ -445,8 +436,6 @@ char* GetDebugStr(void)
 	return g_DebugStr;
 }
 #endif
-
-
 
 //=============================================================================
 // モードの設定
@@ -463,7 +452,6 @@ void SetMode(int mode)
 
 	// リザルト画面の終了処理
 	UninitResult();
-
 
 	g_Mode = mode;	// 次のモードをセットしている
 

@@ -24,11 +24,9 @@
 #define ENEMY_SHADOW_SIZE	(0.4f)						// 影の大きさ
 #define ENEMY_OFFSET_Y		(10.0f)						// エネミーの足元をあわせる
 
-
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-
 
 //*****************************************************************************
 // グローバル変数
@@ -37,15 +35,12 @@ static ENEMY			g_Enemy[MAX_ENEMY];				// エネミー
 
 static BOOL				g_Load = FALSE;
 
-
 static INTERPOLATION_DATA move_tbl[] = {	// pos, rot, scl, frame
-	{ XMFLOAT3(   0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*2 },
-	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, XM_PIDIV2, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*1 },
-	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y, 200.0f), XMFLOAT3(0.0f, XM_PI, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*1 },
-	{ XMFLOAT3(   0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, XM_2PI, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60*2 },
-
+	{ XMFLOAT3(0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60 * 2 },
+	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, XM_PIDIV2, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60 * 1 },
+	{ XMFLOAT3(-200.0f, ENEMY_OFFSET_Y, 200.0f), XMFLOAT3(0.0f, XM_PI, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60 * 1 },
+	{ XMFLOAT3(0.0f, ENEMY_OFFSET_Y,  20.0f), XMFLOAT3(0.0f, XM_2PI, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60 * 2 },
 };
-
 
 //=============================================================================
 // 初期化処理
@@ -57,7 +52,7 @@ HRESULT InitEnemy(void)
 		LoadModel(MODEL_ENEMY, &g_Enemy[i].model);
 		g_Enemy[i].load = TRUE;
 
-		g_Enemy[i].pos = XMFLOAT3(-50.0f  + i * 30.0f, ENEMY_OFFSET_Y, 50.0f * (i % 2 ? 1.0f : -1.0f));
+		g_Enemy[i].pos = XMFLOAT3(-50.0f + i * 30.0f, ENEMY_OFFSET_Y, 50.0f * (i % 2 ? 1.0f : -1.0f));
 		g_Enemy[i].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_Enemy[i].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
@@ -75,7 +70,6 @@ HRESULT InitEnemy(void)
 		g_Enemy[i].tbl_size = 0;		// 再生するアニメデータのレコード数をセット
 
 		g_Enemy[i].use = TRUE;			// TRUE:生きてる
-
 	}
 
 	// モデルのディフューズを保存しておく。色変え対応の為。
@@ -89,8 +83,6 @@ HRESULT InitEnemy(void)
 	g_Enemy[MAX_ENEMY - 1].tbl_size = 0;		// 再生するアニメデータのレコード数をセット
 
 	g_Enemy[MAX_ENEMY - 1].use = TRUE;			// TRUE:生きてる
-
-
 
 	// 0番だけ線形補間で動かしてみる
 	g_Enemy[0].move_time = 0.0f;		// 線形補間用のタイマーをクリア
@@ -163,7 +155,6 @@ void UpdateEnemy(void)
 				XMVECTOR s0 = XMLoadFloat3(&g_Enemy[i].tbl_adr[index + 0].scl);	// 現在のScale
 				XMVECTOR scl = s1 - s0;
 				XMStoreFloat3(&g_Enemy[i].scl, s0 + scl * time);
-
 			}
 			// レイキャストして足元の高さを求める
 			XMFLOAT3 normal = { 0.0f, 1.0f, 0.0f };				// ぶつかったポリゴンの法線ベクトル（向き）
@@ -171,7 +162,6 @@ void UpdateEnemy(void)
 			hitPosition.y = g_Enemy[i].pos.y - ENEMY_OFFSET_Y;	// 外れた時用に初期化しておく
 			bool ans = RayHitField(g_Enemy[i].pos, &hitPosition, &normal);
 			g_Enemy[i].pos.y = hitPosition.y + ENEMY_OFFSET_Y;
-
 
 			XMVECTOR vx, nvx, up;
 			XMVECTOR quat;
@@ -196,7 +186,6 @@ void UpdateEnemy(void)
 			XMStoreFloat4(&g_Enemy[i].quaternion, quat);
 		}
 	}
-
 }
 
 //=============================================================================
@@ -250,7 +239,7 @@ void DrawEnemy(void)
 //=============================================================================
 // エネミーの取得
 //=============================================================================
-ENEMY *GetEnemy()
+ENEMY* GetEnemy()
 {
 	return &g_Enemy[0];
 }
@@ -276,11 +265,10 @@ bool RenderEnemyWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProj
 		XMMATRIX mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-		if (!RenderModelToTexture(&g_Enemy[i].model, 
-			xmmatrix2d3dmatrix(mtxWorld), 
+		if (!RenderModelToTexture(&g_Enemy[i].model,
+			xmmatrix2d3dmatrix(mtxWorld),
 			lightViewMatrix, lightProjectionMatrix))
 			return false;
-		
 	}
 	return true;
 }

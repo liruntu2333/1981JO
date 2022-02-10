@@ -28,14 +28,10 @@
 // マクロ定義
 //*****************************************************************************
 
-
-
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 void CheckHit(void);
-
-
 
 //*****************************************************************************
 // グローバル変数
@@ -43,7 +39,6 @@ void CheckHit(void);
 static int	g_ViewPortType_Game = TYPE_FULL_SCREEN;
 
 static BOOL	g_bPause = TRUE;	// ポーズON/OFF
-
 
 //=============================================================================
 // 初期化処理
@@ -68,13 +63,13 @@ HRESULT InitGame(void)
 		XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
 	InitMeshWall(XMFLOAT3(MAP_RIGHT, 0.0f, 0.0f), XMFLOAT3(0.0f, XM_PI * 0.50f, 0.0f),
 		XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
-	InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_DOWN), XMFLOAT3(0.0f,  XM_PI, 0.0f),
+	InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_DOWN), XMFLOAT3(0.0f, XM_PI, 0.0f),
 		XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, 80.0f, 80.0f);
 
 	// 壁(裏側用の半透明)
-	InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_TOP), XMFLOAT3(0.0f,    XM_PI, 0.0f),
+	InitMeshWall(XMFLOAT3(0.0f, 0.0f, MAP_TOP), XMFLOAT3(0.0f, XM_PI, 0.0f),
 		XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
-	InitMeshWall(XMFLOAT3(MAP_LEFT, 0.0f, 0.0f), XMFLOAT3(0.0f,   XM_PI * 0.50f, 0.0f),
+	InitMeshWall(XMFLOAT3(MAP_LEFT, 0.0f, 0.0f), XMFLOAT3(0.0f, XM_PI * 0.50f, 0.0f),
 		XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
 	InitMeshWall(XMFLOAT3(MAP_RIGHT, 0.0f, 0.0f), XMFLOAT3(0.0f, -XM_PI * 0.50f, 0.0f),
 		XMFLOAT4(1.0f, 1.0f, 1.0f, 0.25f), 16, 2, 80.0f, 80.0f);
@@ -146,10 +141,9 @@ void UpdateGame(void)
 		g_bPause = g_bPause ? FALSE : TRUE;
 	}
 
-
 #endif
 
-	if(g_bPause == FALSE)
+	if (g_bPause == FALSE)
 		return;
 
 	// 地面処理の更新
@@ -207,7 +201,6 @@ void DrawGame0(void)
 	// パーティクルの描画処理
 	//DrawParticle();
 
-
 	// 2Dの物を描画する処理
 	// Z比較なし
 	SetDepthEnable(FALSE);
@@ -218,7 +211,6 @@ void DrawGame0(void)
 	// スコアの描画処理
 	DrawScore();
 
-
 	// ライティングを有効に
 	SetLightEnable(TRUE);
 
@@ -226,11 +218,9 @@ void DrawGame0(void)
 	SetDepthEnable(TRUE);
 }
 
-
 void DrawGame(void)
 {
 	XMFLOAT3 pos;
-
 
 #ifdef _DEBUG
 	// デバッグ表示
@@ -244,7 +234,7 @@ void DrawGame(void)
 	SetCameraAT(pos);
 	SetCamera();
 
-	switch(g_ViewPortType_Game)
+	switch (g_ViewPortType_Game)
 	{
 	case TYPE_FULL_SCREEN:
 		SetViewPort(TYPE_FULL_SCREEN);
@@ -278,20 +268,17 @@ void DrawGame(void)
 		SetViewPort(TYPE_DOWN_HALF_SCREEN);
 		DrawGame0();
 		break;
-
 	}
-
 }
-
 
 //=============================================================================
 // 当たり判定処理
 //=============================================================================
 void CheckHit(void)
 {
-	ENEMY *enemy = GetEnemy();		// エネミーのポインターを初期化
-	PLAYER *player = GetPlayer();	// プレイヤーのポインターを初期化
-	BULLET *bullet = GetBullet();	// 弾のポインターを初期化
+	ENEMY* enemy = GetEnemy();		// エネミーのポインターを初期化
+	PLAYER* player = GetPlayer();	// プレイヤーのポインターを初期化
+	BULLET* bullet = GetBullet();	// 弾のポインターを初期化
 
 	// 敵とプレイヤーキャラ
 	for (int i = 0; i < MAX_ENEMY; i++)
@@ -310,7 +297,6 @@ void CheckHit(void)
 			AddScore(100);
 		}
 	}
-
 
 	// プレイヤーの弾と敵
 	for (int i = 0; i < MAX_BULLET; i++)
@@ -339,9 +325,7 @@ void CheckHit(void)
 				AddScore(10);
 			}
 		}
-
 	}
-
 
 	// エネミーが全部死亡したら状態遷移
 	int enemy_count = 0;
@@ -356,7 +340,4 @@ void CheckHit(void)
 	{
 		SetFade(FADE_OUT, MODE_RESULT);
 	}
-
 }
-
-

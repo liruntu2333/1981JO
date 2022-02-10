@@ -1,11 +1,10 @@
 //=============================================================================
 //
 // メイン処理 [main.h]
-// Author : 
+// Author :
 //
 //=============================================================================
 #pragma once
-
 
 #pragma warning(push)
 #pragma warning(disable:4005)
@@ -20,10 +19,8 @@
 #include <DirectXMath.h>
 #include <d3dx10math.h>
 
-
 // 本来はヘッダに書かない方が良い
 using namespace DirectX;
-
 
 #define DIRECTINPUT_VERSION 0x0800		// 警告対処
 #include "dinput.h"
@@ -31,25 +28,23 @@ using namespace DirectX;
 
 #pragma warning(pop)
 
-
 //*****************************************************************************
 // ライブラリのリンク
 //*****************************************************************************
-#pragma comment (lib, "d3d11.lib")		
+#pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
-#pragma comment (lib, "d3dx11.lib")	
+#pragma comment (lib, "d3dx11.lib")
 #pragma comment (lib, "winmm.lib")
 #pragma comment (lib, "dxerr.lib")
 #pragma comment (lib, "dxguid.lib")
 #pragma comment (lib, "dinput8.lib")
 
-
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 
-#define SCREEN_WIDTH	(960)			// ウインドウの幅
-#define SCREEN_HEIGHT	(540)			// ウインドウの高さ
+#define SCREEN_WIDTH	(1280)			// ウインドウの幅
+#define SCREEN_HEIGHT	(720)			// ウインドウの高さ
 #define SCREEN_CENTER_X	(SCREEN_WIDTH / 2)	// ウインドウの中心Ｘ座標
 #define SCREEN_CENTER_Y	(SCREEN_HEIGHT / 2)	// ウインドウの中心Ｙ座標
 
@@ -78,7 +73,6 @@ enum
 	MODE_MAX
 };
 
-
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -91,11 +85,11 @@ int GetMode(void);
 
 inline XMMATRIX d3dmatrix2xmmatrix(D3DXMATRIX& M)
 {
-	return XMMATRIX{ 
+	return XMMATRIX{
 		M._11, M._12, M._13, M._14,
 		M._21, M._22, M._23, M._24,
 		M._31, M._32, M._33, M._34,
-		M._41, M._42, M._43, M._44,};
+		M._41, M._42, M._43, M._44, };
 }
 
 inline D3DXMATRIX xmmatrix2d3dmatrix(XMMATRIX& M)

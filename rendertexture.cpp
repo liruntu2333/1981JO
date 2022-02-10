@@ -14,7 +14,6 @@ static D3D11_VIEWPORT g_viewport;
 static D3DXMATRIX g_projectionMatrix;
 static D3DXMATRIX g_orthoMatrix;
 
-
 bool InitRenderTex(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -23,7 +22,6 @@ bool InitRenderTex(ID3D11Device* device, int textureWidth, int textureHeight, fl
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-
 
 	// Initialize the render target texture description.
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
@@ -127,7 +125,6 @@ bool InitRenderTex(ID3D11Device* device, int textureWidth, int textureHeight, fl
 	return true;
 }
 
-
 void ShutdownRenderTex()
 {
 	if (g_depthStencilView)
@@ -163,10 +160,8 @@ void ShutdownRenderTex()
 	return;
 }
 
-
 void SetRTRenderTarget(ID3D11DeviceContext* deviceContext)
 {
-
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
 	deviceContext->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
 
@@ -176,11 +171,9 @@ void SetRTRenderTarget(ID3D11DeviceContext* deviceContext)
 	return;
 }
 
-
 void ClearRTRenderTarget(ID3D11DeviceContext* deviceContext, float red, float green, float blue, float alpha)
 {
 	float color[4];
-
 
 	// Setup the color to clear the buffer to.
 	color[0] = red;
@@ -197,19 +190,16 @@ void ClearRTRenderTarget(ID3D11DeviceContext* deviceContext, float red, float gr
 	return;
 }
 
-
 ID3D11ShaderResourceView* GetRTShaderResourceView()
 {
 	return g_shaderResourceView;
 }
-
 
 void GetRTProjectionMatrix(D3DXMATRIX& projectionMatrix)
 {
 	projectionMatrix = g_projectionMatrix;
 	return;
 }
-
 
 void GetRTOrthoMatrix(D3DXMATRIX& orthoMatrix)
 {

@@ -13,25 +13,22 @@
 // マクロ定義
 //*****************************************************************************
 #define TEXTURE_WIDTH				(16)	// キャラサイズ
-#define TEXTURE_HEIGHT				(32)	// 
+#define TEXTURE_HEIGHT				(32)	//
 #define TEXTURE_MAX					(1)		// テクスチャの数
-
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 
-
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
-static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
-static char *g_TexturName[TEXTURE_MAX] = {
+static char* g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/number.png",
 };
-
 
 static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
@@ -42,13 +39,12 @@ static int						g_Score;					// スコア
 
 static BOOL						g_Load = FALSE;
 
-
 //=============================================================================
 // 初期化処理
 //=============================================================================
 HRESULT InitScore(void)
 {
-	ID3D11Device *pDevice = GetDevice();
+	ID3D11Device* pDevice = GetDevice();
 
 	//テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -62,7 +58,6 @@ HRESULT InitScore(void)
 			NULL);
 	}
 
-
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -72,12 +67,11 @@ HRESULT InitScore(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-
 	// プレイヤーの初期化
-	g_Use   = TRUE;
-	g_w     = TEXTURE_WIDTH;
-	g_h     = TEXTURE_HEIGHT;
-	g_Pos   = { 500.0f, 20.0f, 0.0f };
+	g_Use = TRUE;
+	g_w = TEXTURE_WIDTH;
+	g_h = TEXTURE_HEIGHT;
+	g_Pos = { 500.0f, 20.0f, 0.0f };
 	g_TexNo = 0;
 
 	g_Score = 0;	// スコアの初期化
@@ -116,14 +110,11 @@ void UninitScore(void)
 //=============================================================================
 void UpdateScore(void)
 {
-
-
 #ifdef _DEBUG	// デバッグ情報を表示する
 	//char *str = GetDebugStr();
 	//sprintf(&str[strlen(str)], " PX:%.2f PY:%.2f", g_Pos.x, g_Pos.y);
-	
-#endif
 
+#endif
 }
 
 //=============================================================================
@@ -159,7 +150,7 @@ void DrawScore(void)
 		float x = (float)(number % 10);
 
 		// スコアの位置やテクスチャー座標を反映
-		float px = g_Pos.x - g_w*i;	// スコアの表示位置X
+		float px = g_Pos.x - g_w * i;	// スコアの表示位置X
 		float py = g_Pos.y;			// スコアの表示位置Y
 		float pw = g_w;				// スコアの表示幅
 		float ph = g_h;				// スコアの表示高さ
@@ -181,7 +172,6 @@ void DrawScore(void)
 	}
 }
 
-
 //=============================================================================
 // スコアを加算する
 // 引数:add :追加する点数。マイナスも可能
@@ -193,12 +183,9 @@ void AddScore(int add)
 	{
 		g_Score = SCORE_MAX;
 	}
-
 }
-
 
 int GetScore(void)
 {
 	return g_Score;
 }
-

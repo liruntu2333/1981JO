@@ -21,7 +21,7 @@
 struct DX11_MODEL_MATERIAL
 {
 	MATERIAL					Material;
-	ID3D11ShaderResourceView	*Texture;
+	ID3D11ShaderResourceView* Texture;
 };
 
 // 描画サブセット構造体
@@ -34,27 +34,23 @@ struct DX11_SUBSET
 
 struct DX11_MODEL
 {
-	ID3D11Buffer*	VertexBuffer;
-	ID3D11Buffer*	IndexBuffer;
+	ID3D11Buffer* VertexBuffer;
+	ID3D11Buffer* IndexBuffer;
 
-	DX11_SUBSET		*SubsetArray;
+	DX11_SUBSET* SubsetArray;
 	unsigned short	SubsetNum;
 };
-
-
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-void LoadModel( char *FileName, DX11_MODEL *Model );
-void UnloadModel( DX11_MODEL *Model );
-void DrawModel( DX11_MODEL *Model );
+void LoadModel(char* FileName, DX11_MODEL* Model);
+void UnloadModel(DX11_MODEL* Model);
+void DrawModel(DX11_MODEL* Model);
 bool RenderModelToTexture(DX11_MODEL* Model, D3DXMATRIX mtxWorld, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix);
 
 // モデルのマテリアルのディフューズを取得する。Max16個分にしてある
-void GetModelDiffuse(DX11_MODEL *Model, XMFLOAT4 *diffuse);
+void GetModelDiffuse(DX11_MODEL* Model, XMFLOAT4* diffuse);
 
 // モデルの指定マテリアルのディフューズをセットする。
-void SetModelDiffuse(DX11_MODEL *Model, int mno, XMFLOAT4 diffuse);
-
-
+void SetModelDiffuse(DX11_MODEL* Model, int mno, XMFLOAT4 diffuse);

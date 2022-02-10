@@ -23,14 +23,14 @@
 //*****************************************************************************
 typedef struct
 {
-	ID3D11Buffer	*vertexBuffer;	// 頂点バッファ
-	ID3D11Buffer	*indexBuffer;	// インデックスバッファ
+	ID3D11Buffer* vertexBuffer;	// 頂点バッファ
+	ID3D11Buffer* indexBuffer;	// インデックスバッファ
 
 	XMFLOAT3		pos;						// ポリゴン表示位置の中心座標
 	XMFLOAT3		rot;						// ポリゴンの回転角
 	MATERIAL		material;					// マテリアル
 	int				nNumBlockX, nNumBlockY;		// ブロック数
-	int				nNumVertex;					// 総頂点数	
+	int				nNumVertex;					// 総頂点数
 	int				nNumVertexIndex;			// 総インデックス数
 	int				nNumPolygon;				// 総ポリゴン数
 	float			fBlockSizeX, fBlockSizeY;	// ブロックサイズ
@@ -39,7 +39,7 @@ typedef struct
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;		// テクスチャ番号
 
 static MESH_WALL g_aMeshWall[MAX_MESH_WALL];		// メッシュ壁ワーク
@@ -51,16 +51,15 @@ static char* g_TextureName[TEXTURE_MAX] = {
 
 static BOOL							g_Load = FALSE;
 
-
 //=============================================================================
 // 初期化処理
 //=============================================================================
 HRESULT InitMeshWall(XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT4 col,
-						int nNumBlockX, int nNumBlockY, float fBlockSizeX, float fBlockSizeZ)
+	int nNumBlockX, int nNumBlockY, float fBlockSizeX, float fBlockSizeZ)
 {
-	MESH_WALL *pMesh;
+	MESH_WALL* pMesh;
 
-	if(g_nNumMeshWall >= MAX_MESH_WALL)
+	if (g_nNumMeshWall >= MAX_MESH_WALL)
 	{
 		return E_FAIL;
 	}
@@ -145,9 +144,9 @@ HRESULT InitMeshWall(XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT4 col,
 
 		VERTEX_3D* pVtx = (VERTEX_3D*)msr.pData;
 
-		for(int nCntVtxY = 0; nCntVtxY < (pMesh->nNumBlockY + 1); nCntVtxY++)
+		for (int nCntVtxY = 0; nCntVtxY < (pMesh->nNumBlockY + 1); nCntVtxY++)
 		{
-			for(int nCntVtxX = 0; nCntVtxX < (pMesh->nNumBlockX + 1); nCntVtxX++)
+			for (int nCntVtxX = 0; nCntVtxX < (pMesh->nNumBlockX + 1); nCntVtxX++)
 			{
 				// 頂点座標の設定
 				pVtx[nCntVtxY * (pMesh->nNumBlockX + 1) + nCntVtxX].Position.x = -(pMesh->nNumBlockX / 2.0f) * pMesh->fBlockSizeX + nCntVtxX * pMesh->fBlockSizeX;
@@ -174,18 +173,18 @@ HRESULT InitMeshWall(XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT4 col,
 		D3D11_MAPPED_SUBRESOURCE msr;
 		GetDeviceContext()->Map(pMesh->indexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
-		unsigned short *pIdx = (unsigned short*)msr.pData;
+		unsigned short* pIdx = (unsigned short*)msr.pData;
 
 		int nCntIdx = 0;
-		for(int nCntVtxY = 0; nCntVtxY < pMesh->nNumBlockY; nCntVtxY++)
+		for (int nCntVtxY = 0; nCntVtxY < pMesh->nNumBlockY; nCntVtxY++)
 		{
-			if(nCntVtxY > 0)
+			if (nCntVtxY > 0)
 			{// 縮退ポリゴンのためのダブりの設定
 				pIdx[nCntIdx] = (nCntVtxY + 1) * (pMesh->nNumBlockX + 1);
 				nCntIdx++;
 			}
 
-			for(int nCntVtxX = 0; nCntVtxX < (pMesh->nNumBlockX + 1); nCntVtxX++)
+			for (int nCntVtxX = 0; nCntVtxX < (pMesh->nNumBlockX + 1); nCntVtxX++)
 			{
 				pIdx[nCntIdx] = (nCntVtxY + 1) * (pMesh->nNumBlockX + 1) + nCntVtxX;
 				nCntIdx++;
@@ -193,7 +192,7 @@ HRESULT InitMeshWall(XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT4 col,
 				nCntIdx++;
 			}
 
-			if(nCntVtxY < (pMesh->nNumBlockY - 1))
+			if (nCntVtxY < (pMesh->nNumBlockY - 1))
 			{// 縮退ポリゴンのためのダブりの設定
 				pIdx[nCntIdx] = nCntVtxY * (pMesh->nNumBlockX + 1) + pMesh->nNumBlockX;
 				nCntIdx++;
@@ -212,22 +211,22 @@ HRESULT InitMeshWall(XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT4 col,
 //=============================================================================
 void UninitMeshWall(void)
 {
-	MESH_WALL *pMesh;
+	MESH_WALL* pMesh;
 	int nCntMeshField;
 
 	if (g_Load == FALSE) return;
 
-	for(nCntMeshField = 0; nCntMeshField < g_nNumMeshWall; nCntMeshField++)
+	for (nCntMeshField = 0; nCntMeshField < g_nNumMeshWall; nCntMeshField++)
 	{
 		pMesh = &g_aMeshWall[nCntMeshField];
 
-		if(pMesh->vertexBuffer)
+		if (pMesh->vertexBuffer)
 		{// 頂点バッファの解放
 			pMesh->vertexBuffer->Release();
 			pMesh->vertexBuffer = NULL;
 		}
 
-		if(pMesh->indexBuffer)
+		if (pMesh->indexBuffer)
 		{// インデックスバッファの解放
 			pMesh->indexBuffer->Release();
 			pMesh->indexBuffer = NULL;
@@ -262,13 +261,13 @@ void UpdateMeshWall(void)
 //=============================================================================
 void DrawMeshWall(void)
 {
-	MESH_WALL *pMesh;
+	MESH_WALL* pMesh;
 	int nCntMeshField;
-	
+
 	// ライティングオフ
 	SetLightEnable(FALSE);
 
-	for(nCntMeshField = 0; nCntMeshField < g_nNumMeshWall; nCntMeshField++)
+	for (nCntMeshField = 0; nCntMeshField < g_nNumMeshWall; nCntMeshField++)
 	{
 		pMesh = &g_aMeshWall[nCntMeshField];
 
@@ -289,8 +288,6 @@ void DrawMeshWall(void)
 		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-
-
 		XMMATRIX mtxRot, mtxTranslate, mtxWorld;
 
 		// ワールドマトリックスの初期化
@@ -307,7 +304,6 @@ void DrawMeshWall(void)
 		// ワールドマトリックスの設定
 		SetWorldMatrix(&mtxWorld);
 
-
 		// ポリゴンの描画
 		GetDeviceContext()->DrawIndexed(pMesh->nNumVertexIndex, 0, 0);
 	}
@@ -315,4 +311,3 @@ void DrawMeshWall(void)
 	// ライティングオン
 	SetLightEnable(TRUE);
 }
-

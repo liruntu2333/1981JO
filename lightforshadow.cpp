@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "lightforshadow.h"
 
-#pragma comment (lib, "d3dx9.lib")	
+#pragma comment (lib, "d3dx9.lib")
 
 ////////////
 // GLOBAL //
@@ -14,7 +14,6 @@ static D3DXVECTOR3 g_position;
 static D3DXVECTOR3 g_lookAt;
 static D3DXMATRIX g_viewMatrix;
 static D3DXMATRIX g_projectionMatrix;
-
 
 //void SetSLAmbientColor(float red, float green, float blue, float alpha)
 //{
@@ -29,13 +28,11 @@ static D3DXMATRIX g_projectionMatrix;
 //	return;
 //}
 
-
 void SetSLPosition(float x, float y, float z)
 {
 	g_position = D3DXVECTOR3(x, y, z);
 	return;
 }
-
 
 void SetSLLookAt(float x, float y, float z)
 {
@@ -44,7 +41,6 @@ void SetSLLookAt(float x, float y, float z)
 	g_lookAt.z = z;
 	return;
 }
-
 
 //D3DXVECTOR4 GetSLAmbientColor()
 //{
@@ -57,17 +53,14 @@ void SetSLLookAt(float x, float y, float z)
 //	return g_diffuseColor;
 //}
 
-
 D3DXVECTOR3 GetSLPosition()
 {
 	return g_position;
 }
 
-
 void GenerateSLViewMatrix()
 {
 	D3DXVECTOR3 up;
-
 
 	// Setup the vector that points x+.
 	up.x = 1.0f;
@@ -80,11 +73,9 @@ void GenerateSLViewMatrix()
 	return;
 }
 
-
 void GenerateSLProjectionMatrix(float screenDepth, float screenNear)
 {
 	float fieldOfView, screenAspect;
-
 
 	// Setup field of view and screen aspect for a square light source.
 	fieldOfView = (float)D3DX_PI / 2.0f;
@@ -96,13 +87,11 @@ void GenerateSLProjectionMatrix(float screenDepth, float screenNear)
 	return;
 }
 
-
 void GetSLViewMatrix(D3DXMATRIX& viewMatrix)
 {
 	viewMatrix = g_viewMatrix;
 	return;
 }
-
 
 void GetSLProjectionMatrix(D3DXMATRIX& projectionMatrix)
 {

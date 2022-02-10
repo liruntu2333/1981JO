@@ -17,29 +17,27 @@
 // マクロ定義
 //*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)	// 背景サイズ
-#define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	// 
+#define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	//
 #define TEXTURE_MAX					(3)				// テクスチャの数
 
 #define TEXTURE_WIDTH_LOGO			(480)			// ロゴサイズ
-#define TEXTURE_HEIGHT_LOGO			(80)			// 
+#define TEXTURE_HEIGHT_LOGO			(80)			//
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 
-
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
-static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
-static char *g_TexturName[TEXTURE_MAX] = {
+static char* g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/earth_at_moon.jpg",
 	"data/TEXTURE/result_logo.png",
 	"data/TEXTURE/number.png",
 };
-
 
 static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
@@ -53,7 +51,7 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 HRESULT InitResult(void)
 {
-	ID3D11Device *pDevice = GetDevice();
+	ID3D11Device* pDevice = GetDevice();
 
 	//テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -67,7 +65,6 @@ HRESULT InitResult(void)
 			NULL);
 	}
 
-
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -77,12 +74,11 @@ HRESULT InitResult(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-
 	// 変数の初期化
-	g_Use   = TRUE;
-	g_w     = TEXTURE_WIDTH;
-	g_h     = TEXTURE_HEIGHT;
-	g_Pos   = { g_w / 2, 50.0f, 0.0f };
+	g_Use = TRUE;
+	g_w = TEXTURE_WIDTH;
+	g_h = TEXTURE_HEIGHT;
+	g_Pos = { g_w / 2, 50.0f, 0.0f };
 	g_TexNo = 0;
 
 	// BGM再生
@@ -122,7 +118,6 @@ void UninitResult(void)
 //=============================================================================
 void UpdateResult(void)
 {
-
 	if (GetKeyboardTrigger(DIK_RETURN))
 	{// Enter押したら、ステージを切り替える
 		SetFade(FADE_OUT, MODE_TITLE);
@@ -137,11 +132,9 @@ void UpdateResult(void)
 		SetFade(FADE_OUT, MODE_TITLE);
 	}
 
-
 #ifdef _DEBUG	// デバッグ情報を表示する
-	
-#endif
 
+#endif
 }
 
 //=============================================================================
@@ -190,7 +183,6 @@ void DrawResult(void)
 		GetDeviceContext()->Draw(4, 0);
 	}
 
-
 	// スコア表示
 	{
 		// テクスチャ設定
@@ -204,9 +196,9 @@ void DrawResult(void)
 			float x = (float)(number % 10);
 
 			// スコアの位置やテクスチャー座標を反映
-			float pw = 16*4;			// スコアの表示幅
-			float ph = 32*4;			// スコアの表示高さ
-			float px = 600.0f - i*pw;	// スコアの表示位置X
+			float pw = 16 * 4;			// スコアの表示幅
+			float ph = 32 * 4;			// スコアの表示高さ
+			float px = 600.0f - i * pw;	// スコアの表示位置X
 			float py = 470.0f;			// スコアの表示位置Y
 
 			float tw = 1.0f / 10;		// テクスチャの幅
@@ -224,13 +216,5 @@ void DrawResult(void)
 			// 次の桁へ
 			number /= 10;
 		}
-
 	}
-
-
-
 }
-
-
-
-

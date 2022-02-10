@@ -41,7 +41,6 @@ typedef struct
 	int				nIdxShadow;		// 影ID
 	int				nLife;			// 寿命
 	BOOL			bUse;			// 使用しているかどうか
-
 } PARTICLE;
 
 //*****************************************************************************
@@ -52,9 +51,9 @@ HRESULT MakeVertexParticle(void);
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer					*g_VertexBuffer = NULL;		// 頂点バッファ
+static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点バッファ
 
-static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;					// テクスチャ番号
 
 static PARTICLE					g_aParticle[MAX_PARTICLE];		// パーティクルワーク
@@ -64,7 +63,7 @@ static float					g_fHeightBase = 10.0f;			// 基準の高さ
 static float					g_roty = 0.0f;					// 移動方向
 static float					g_spd = 0.0f;					// 移動スピード
 
-static char *g_TextureName[TEXTURE_MAX] =
+static char* g_TextureName[TEXTURE_MAX] =
 {
 	"data/TEXTURE/effect000.jpg",
 };
@@ -94,7 +93,7 @@ HRESULT InitParticle(void)
 	g_TexNo = 0;
 
 	// パーティクルワークの初期化
-	for(int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
+	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
 		g_aParticle[nCntParticle].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		g_aParticle[nCntParticle].rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -155,15 +154,15 @@ void UpdateParticle(void)
 	//g_posBase = pPlayer->pos;
 
 	{
-		for(int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
+		for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 		{
-			if(g_aParticle[nCntParticle].bUse)
+			if (g_aParticle[nCntParticle].bUse)
 			{// 使用中
 				g_aParticle[nCntParticle].pos.x += g_aParticle[nCntParticle].move.x;
 				g_aParticle[nCntParticle].pos.z += g_aParticle[nCntParticle].move.z;
 
 				g_aParticle[nCntParticle].pos.y += g_aParticle[nCntParticle].move.y;
-				if(g_aParticle[nCntParticle].pos.y <= g_aParticle[nCntParticle].fSizeY / 2)
+				if (g_aParticle[nCntParticle].pos.y <= g_aParticle[nCntParticle].fSizeY / 2)
 				{// 着地した
 					g_aParticle[nCntParticle].pos.y = g_aParticle[nCntParticle].fSizeY / 2;
 					g_aParticle[nCntParticle].move.y = -g_aParticle[nCntParticle].move.y * 0.75f;
@@ -174,25 +173,25 @@ void UpdateParticle(void)
 				g_aParticle[nCntParticle].move.z += (0.0f - g_aParticle[nCntParticle].move.z) * 0.015f;
 
 				g_aParticle[nCntParticle].nLife--;
-				if(g_aParticle[nCntParticle].nLife <= 0)
+				if (g_aParticle[nCntParticle].nLife <= 0)
 				{
 					g_aParticle[nCntParticle].bUse = FALSE;
 					g_aParticle[nCntParticle].nIdxShadow = -1;
 				}
 				else
 				{
-					if(g_aParticle[nCntParticle].nLife <= 80)
+					if (g_aParticle[nCntParticle].nLife <= 80)
 					{
 						g_aParticle[nCntParticle].material.Diffuse.x = 0.8f - (float)(80 - g_aParticle[nCntParticle].nLife) / 80 * 0.8f;
 						g_aParticle[nCntParticle].material.Diffuse.y = 0.7f - (float)(80 - g_aParticle[nCntParticle].nLife) / 80 * 0.7f;
 						g_aParticle[nCntParticle].material.Diffuse.z = 0.2f - (float)(80 - g_aParticle[nCntParticle].nLife) / 80 * 0.2f;
 					}
 
-					if(g_aParticle[nCntParticle].nLife <= 20)
+					if (g_aParticle[nCntParticle].nLife <= 20)
 					{
 						// α値設定
 						g_aParticle[nCntParticle].material.Diffuse.w -= 0.05f;
-						if(g_aParticle[nCntParticle].material.Diffuse.w < 0.0f)
+						if (g_aParticle[nCntParticle].material.Diffuse.w < 0.0f)
 						{
 							g_aParticle[nCntParticle].material.Diffuse.w = 0.0f;
 						}
@@ -212,12 +211,12 @@ void UpdateParticle(void)
 			pos = g_posBase;
 
 			fAngle = (float)(rand() % 628 - 314) / 100.0f;
-			fLength = rand() % (int)(g_fWidthBase * 200 ) / 100.0f - g_fWidthBase;
+			fLength = rand() % (int)(g_fWidthBase * 200) / 100.0f - g_fWidthBase;
 			move.x = sinf(fAngle) * fLength;
 			move.y = rand() % 300 / 100.0f + g_fHeightBase;
 			move.z = cosf(fAngle) * fLength;
 
-			nLife = rand() % 100 + 150;  
+			nLife = rand() % 100 + 150;
 
 			fSize = (float)(rand() % 30 + 20);
 
@@ -235,7 +234,7 @@ void UpdateParticle(void)
 void DrawParticle(void)
 {
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
-	CAMERA *cam = GetCamera();
+	CAMERA* cam = GetCamera();
 
 	// ライティングを無効に
 	SetLightEnable(FALSE);
@@ -260,9 +259,9 @@ void DrawParticle(void)
 	// テクスチャ設定
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-	for(int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
+	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
-		if(g_aParticle[nCntParticle].bUse)
+		if (g_aParticle[nCntParticle].bUse)
 		{
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
@@ -318,7 +317,6 @@ void DrawParticle(void)
 
 	// フォグ有効
 	SetFogEnable(TRUE);
-
 }
 
 //=============================================================================
@@ -387,12 +385,12 @@ int SetParticle(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT4 col, float fSizeX, float f
 {
 	int nIdxParticle = -1;
 
-	for(int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
+	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
-		if(!g_aParticle[nCntParticle].bUse)
+		if (!g_aParticle[nCntParticle].bUse)
 		{
 			g_aParticle[nCntParticle].pos = pos;
-			g_aParticle[nCntParticle].rot   = { 0.0f, 0.0f, 0.0f };
+			g_aParticle[nCntParticle].rot = { 0.0f, 0.0f, 0.0f };
 			g_aParticle[nCntParticle].scale = { 1.0f, 1.0f, 1.0f };
 			g_aParticle[nCntParticle].move = move;
 			g_aParticle[nCntParticle].material.Diffuse = col;

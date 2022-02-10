@@ -22,17 +22,17 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer					*g_VertexBuffer = NULL;	// 頂点バッファ
-static ID3D11Buffer					*g_IndexBuffer = NULL;	// インデックスバッファ
+static ID3D11Buffer* g_VertexBuffer = NULL;	// 頂点バッファ
+static ID3D11Buffer* g_IndexBuffer = NULL;	// インデックスバッファ
 
-static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 static int							g_TexNo;				// テクスチャ番号
 
 static XMFLOAT3		g_posField;								// ポリゴン表示位置の中心座標
 static XMFLOAT3		g_rotField;								// ポリゴンの回転角
 
 static int			g_nNumBlockXField, g_nNumBlockZField;	// ブロック数
-static int			g_nNumVertexField;						// 総頂点数	
+static int			g_nNumVertexField;						// 総頂点数
 static int			g_nNumVertexIndexField;					// 総インデックス数
 static int			g_nNumPolygonField;						// 総ポリゴン数
 static float		g_fBlockSizeXField, g_fBlockSizeZField;	// ブロックサイズ
@@ -41,26 +41,24 @@ static char* g_TextureName[] = {
 	"data/TEXTURE/ground.jpg",
 };
 
-
 // 波の処理
 
-static VERTEX_3D	*g_Vertex = NULL;
+static VERTEX_3D* g_Vertex = NULL;
 
 // 波の高さ = sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
 static XMFLOAT3		g_Center;					// 波の発生場所
 static float		g_Time = 0.0f;				// 波の経過時間
-static float		g_wave_frequency  = 0.0f;	// 波の周波数
+static float		g_wave_frequency = 0.0f;	// 波の周波数
 static float		g_wave_correction = 0.0f;	// 波の距離補正
-static float		g_wave_amplitude  = 0.0f;	// 波の振幅
+static float		g_wave_amplitude = 0.0f;	// 波の振幅
 
 static BOOL			g_Load = FALSE;
-
 
 //=============================================================================
 // 初期化処理
 //=============================================================================
 HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
-							int nNumBlockX, int nNumBlockZ, float fBlockSizeX, float fBlockSizeZ)
+	int nNumBlockX, int nNumBlockZ, float fBlockSizeX, float fBlockSizeZ)
 {
 	// ポリゴン表示位置の中心座標を設定
 	g_posField = pos;
@@ -97,7 +95,6 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 	g_fBlockSizeXField = fBlockSizeX;
 	g_fBlockSizeZField = fBlockSizeZ;
 
-
 	// 頂点情報をメモリに作っておく（波の為）
 	// 波の処理
 	// 波の高さ = sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
@@ -128,8 +125,8 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 
 			// 法線の設定
 			// In XY plane
-			XMVECTOR nor = { sinf(dx * g_wave_correction ),
-				abs(cosf(len * g_wave_correction)), 
+			XMVECTOR nor = { sinf(dx * g_wave_correction),
+				abs(cosf(len * g_wave_correction)),
 				sinf(dz * g_wave_correction) };
 			XMVector3Normalize(nor);
 			XMStoreFloat3(&g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal, nor);
@@ -144,9 +141,7 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].TexCoord.x = texSizeX * x;
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].TexCoord.y = texSizeZ * z;
 		}
-
 	}
-
 
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -158,7 +153,6 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-
 	// インデックスバッファ生成
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -168,38 +162,35 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 
 	GetDevice()->CreateBuffer(&bd, NULL, &g_IndexBuffer);
 
-
 	{//頂点バッファの中身を埋める
-
 		// 頂点バッファへのポインタを取得
 		D3D11_MAPPED_SUBRESOURCE msr;
 		GetDeviceContext()->Map(g_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
 		VERTEX_3D* pVtx = (VERTEX_3D*)msr.pData;
 
-		memcpy(pVtx, g_Vertex, sizeof(VERTEX_3D)*g_nNumVertexField);
+		memcpy(pVtx, g_Vertex, sizeof(VERTEX_3D) * g_nNumVertexField);
 
 		GetDeviceContext()->Unmap(g_VertexBuffer, 0);
 	}
 
 	{//インデックスバッファの中身を埋める
-
 		// インデックスバッファのポインタを取得
 		D3D11_MAPPED_SUBRESOURCE msr;
 		GetDeviceContext()->Map(g_IndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
-		unsigned short *pIdx = (unsigned short*)msr.pData;
+		unsigned short* pIdx = (unsigned short*)msr.pData;
 
 		int nCntIdx = 0;
-		for(int nCntVtxZ = 0; nCntVtxZ < g_nNumBlockZField; nCntVtxZ++)
+		for (int nCntVtxZ = 0; nCntVtxZ < g_nNumBlockZField; nCntVtxZ++)
 		{
-			if(nCntVtxZ > 0)
+			if (nCntVtxZ > 0)
 			{// 縮退ポリゴンのためのダブりの設定
 				pIdx[nCntIdx] = (nCntVtxZ + 1) * (g_nNumBlockXField + 1);
 				nCntIdx++;
 			}
 
-			for(int nCntVtxX = 0; nCntVtxX < (g_nNumBlockXField + 1); nCntVtxX++)
+			for (int nCntVtxX = 0; nCntVtxX < (g_nNumBlockXField + 1); nCntVtxX++)
 			{
 				pIdx[nCntIdx] = (nCntVtxZ + 1) * (g_nNumBlockXField + 1) + nCntVtxX;
 				nCntIdx++;
@@ -207,7 +198,7 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 				nCntIdx++;
 			}
 
-			if(nCntVtxZ < (g_nNumBlockZField - 1))
+			if (nCntVtxZ < (g_nNumBlockZField - 1))
 			{// 縮退ポリゴンのためのダブりの設定
 				pIdx[nCntIdx] = nCntVtxZ * (g_nNumBlockXField + 1) + g_nNumBlockXField;
 				nCntIdx++;
@@ -264,7 +255,6 @@ void UninitMeshField(void)
 //=============================================================================
 void UpdateMeshField(void)
 {
-
 	return;	// 処理をスキップ！
 
 	// 波の処理
@@ -284,10 +274,8 @@ void UpdateMeshField(void)
 		//	g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = 0.0f;
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = sinf(-g_Time * g_wave_frequency + len * g_wave_correction) * g_wave_amplitude;
 		}
-
 	}
 	g_Time += dt;
-
 
 	// 頂点バッファに値をセットする
 	D3D11_MAPPED_SUBRESOURCE msr;
@@ -295,10 +283,9 @@ void UpdateMeshField(void)
 	VERTEX_3D* pVtx = (VERTEX_3D*)msr.pData;
 
 	// 全頂点情報を毎回上書きしているのはDX11ではこの方が早いからです
-	memcpy(pVtx, g_Vertex, sizeof(VERTEX_3D)*g_nNumVertexField);
+	memcpy(pVtx, g_Vertex, sizeof(VERTEX_3D) * g_nNumVertexField);
 
 	GetDeviceContext()->Unmap(g_VertexBuffer, 0);
-
 }
 
 //=============================================================================
@@ -330,7 +317,6 @@ void DrawMeshField(void)
 	// テクスチャ設定
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-
 	XMMATRIX mtxRot, mtxTranslate, mtxWorld;
 
 	// ワールドマトリックスの初期化
@@ -347,7 +333,6 @@ void DrawMeshField(void)
 	// ワールドマトリックスの設定
 	SetWorldMatrix(&mtxWorld);
 
-
 	// ポリゴンの描画
 	GetDeviceContext()->DrawIndexed(g_nNumVertexIndexField, 0, 0);
 
@@ -357,7 +342,7 @@ void DrawMeshField(void)
 
 	//// Render the model using the shadow shader.
 	// RenderShadow(GetDeviceContext(), g_nNumVertexIndexField, *reinterpret_cast<D3DXMATRIX*>(&mtxWorld), *reinterpret_cast<D3DXMATRIX*>(&GetCamera()->mtxView),
-	//	 *reinterpret_cast<D3DXMATRIX*>(&GetCamera()->mtxProjection), 
+	//	 *reinterpret_cast<D3DXMATRIX*>(&GetCamera()->mtxProjection),
 	//	 lightViewMatrix,
 	//	lightProjectionMatrix, g_Texture[0], GetRTShaderResourceView(), GetSLPosition(),
 	//	GetSLAmbientColor(), GetSLDiffuseColor());
@@ -403,9 +388,7 @@ bool RenderFieldWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProj
 	return true;
 }
 
-
-
-BOOL RayHitField(XMFLOAT3 pos, XMFLOAT3 *HitPosition, XMFLOAT3 *Normal)
+BOOL RayHitField(XMFLOAT3 pos, XMFLOAT3* HitPosition, XMFLOAT3* Normal)
 {
 	XMFLOAT3 start = pos;
 	XMFLOAT3 end = pos;
@@ -418,15 +401,15 @@ BOOL RayHitField(XMFLOAT3 pos, XMFLOAT3 *HitPosition, XMFLOAT3 *Normal)
 	// 処理を高速化する為に全検索ではなくて、座標からポリゴンを割り出すと
 	float fz = (g_nNumBlockXField / 2.0f) * g_fBlockSizeXField;
 	float fx = (g_nNumBlockZField / 2.0f) * g_fBlockSizeZField;
-	int sz = (int)((-start.z+fz) / g_fBlockSizeZField);
-	int sx = (int)(( start.x+fx) / g_fBlockSizeXField);
+	int sz = (int)((-start.z + fz) / g_fBlockSizeZField);
+	int sx = (int)((start.x + fx) / g_fBlockSizeXField);
 	int ez = sz + 1;
 	int ex = sx + 1;
 
 	if ((sz < 0) || (sz > g_nNumBlockZField - 1) ||
 		(sx < 0) || (sx > g_nNumBlockXField - 1))
 	{
-		*Normal = {0.0f, 1.0f, 0.0f};
+		*Normal = { 0.0f, 1.0f, 0.0f };
 		return FALSE;
 	}
 

@@ -14,7 +14,7 @@
 // マクロ定義
 //*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)	// 背景サイズ
-#define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	// 
+#define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	//
 #define TEXTURE_MAX					(1)				// テクスチャの数
 
 #define	FADE_RATE					(0.02f)			// フェード係数
@@ -23,17 +23,15 @@
 // プロトタイプ宣言
 //*****************************************************************************
 
-
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer				*g_VertexBuffer = NULL;		// 頂点情報
-static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
-static char *g_TexturName[TEXTURE_MAX] = {
+static char* g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/fade_black.png",
 };
-
 
 static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
 static float					g_w, g_h;					// 幅と高さ
@@ -51,7 +49,7 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 HRESULT InitFade(void)
 {
-	ID3D11Device *pDevice = GetDevice();
+	ID3D11Device* pDevice = GetDevice();
 
 	//テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
@@ -65,7 +63,6 @@ HRESULT InitFade(void)
 			NULL);
 	}
 
-
 	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -75,15 +72,14 @@ HRESULT InitFade(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-
 	// プレイヤーの初期化
-	g_Use   = TRUE;
-	g_w     = TEXTURE_WIDTH;
-	g_h     = TEXTURE_HEIGHT;
-	g_Pos   = { 0.0f, 0.0f, 0.0f };
+	g_Use = TRUE;
+	g_w = TEXTURE_WIDTH;
+	g_h = TEXTURE_HEIGHT;
+	g_Pos = { 0.0f, 0.0f, 0.0f };
 	g_TexNo = 0;
 
-	g_Fade  = FADE_IN;
+	g_Fade = FADE_IN;
 	g_Color = { 1.0, 0.0, 0.0, 1.0 };
 
 	g_Load = TRUE;
@@ -120,7 +116,6 @@ void UninitFade(void)
 //=============================================================================
 void UpdateFade(void)
 {
-
 	if (g_Fade != FADE_NONE)
 	{// フェード処理中
 		if (g_Fade == FADE_OUT)
@@ -138,7 +133,6 @@ void UpdateFade(void)
 				// モードを設定
 				SetMode(g_ModeNext);
 			}
-
 		}
 		else if (g_Fade == FADE_IN)
 		{// フェードイン処理
@@ -149,16 +143,13 @@ void UpdateFade(void)
 				g_Color.w = 0.0f;
 				SetFade(FADE_NONE, g_ModeNext);
 			}
-
 		}
 	}
-
 
 #ifdef _DEBUG	// デバッグ情報を表示する
 	// PrintDebugProc("\n");
 
 #endif
-
 }
 
 //=============================================================================
@@ -185,7 +176,6 @@ void DrawFade(void)
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	SetMaterial(material);
 
-
 	// タイトルの背景を描画
 	{
 		// テクスチャ設定
@@ -193,17 +183,13 @@ void DrawFade(void)
 
 		// １枚のポリゴンの頂点とテクスチャ座標を設定
 		//SetVertex(0.0f, 0.0f, SCREEN_WIDTH, TEXTURE_WIDTH, 0.0f, 0.0f, 1.0f, 1.0f);
-		SetSpriteColor(g_VertexBuffer, SCREEN_WIDTH/2, TEXTURE_WIDTH/2, SCREEN_WIDTH, TEXTURE_WIDTH, 0.0f, 0.0f, 1.0f, 1.0f,
+		SetSpriteColor(g_VertexBuffer, SCREEN_WIDTH / 2, TEXTURE_WIDTH / 2, SCREEN_WIDTH, TEXTURE_WIDTH, 0.0f, 0.0f, 1.0f, 1.0f,
 			g_Color);
 
 		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
 	}
-
-
-
 }
-
 
 //=============================================================================
 // フェードの状態設定
@@ -221,6 +207,3 @@ FADE GetFade(void)
 {
 	return g_Fade;
 }
-
-
-

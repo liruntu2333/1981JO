@@ -10,7 +10,6 @@
 #include "camera.h"
 #include "tree.h"
 
-
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -33,7 +32,6 @@ typedef struct
 	float		fHeight;		// 高さ
 	int			nIdxShadow;		// 影ID
 	BOOL		bUse;			// 使用しているかどうか
-
 } TREE;
 
 //*****************************************************************************
@@ -44,8 +42,8 @@ HRESULT MakeVertexTree(void);
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static ID3D11Buffer					*g_VertexBuffer = NULL;	// 頂点バッファ
-static ID3D11ShaderResourceView		*g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer* g_VertexBuffer = NULL;	// 頂点バッファ
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
 
 static TREE					g_aTree[MAX_TREE];	// 木ワーク
 static int					g_TexNo;			// テクスチャ番号
@@ -54,8 +52,7 @@ static BOOL					g_bAlpaTest;		// アルファテストON/OFF
 
 static BOOL					g_Load = FALSE;
 
-
-static char *g_TextureName[TEXTURE_MAX] =
+static char* g_TextureName[TEXTURE_MAX] =
 {
 	"data/TEXTURE/monolith.png",
 	"data/TEXTURE/tree002.png",
@@ -85,7 +82,7 @@ HRESULT InitTree(void)
 	g_TexNo = 0;
 
 	// 木ワークの初期化
-	for(int nCntTree = 0; nCntTree < MAX_TREE; nCntTree++)
+	for (int nCntTree = 0; nCntTree < MAX_TREE; nCntTree++)
 	{
 		ZeroMemory(&g_aTree[nCntTree].material, sizeof(g_aTree[nCntTree].material));
 		g_aTree[nCntTree].material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -118,16 +115,16 @@ void UninitTree(void)
 {
 	if (g_Load == FALSE) return;
 
-	for(int nCntTex = 0; nCntTex < TEXTURE_MAX; nCntTex++)
+	for (int nCntTex = 0; nCntTex < TEXTURE_MAX; nCntTex++)
 	{
-		if(g_Texture[nCntTex] != NULL)
+		if (g_Texture[nCntTex] != NULL)
 		{// テクスチャの解放
 			g_Texture[nCntTex]->Release();
 			g_Texture[nCntTex] = NULL;
 		}
 	}
 
-	if(g_VertexBuffer != NULL)
+	if (g_VertexBuffer != NULL)
 	{// 頂点バッファの解放
 		g_VertexBuffer->Release();
 		g_VertexBuffer = NULL;
@@ -141,21 +138,18 @@ void UninitTree(void)
 //=============================================================================
 void UpdateTree(void)
 {
-
-	for(int nCntTree = 0; nCntTree < MAX_TREE; nCntTree++)
+	for (int nCntTree = 0; nCntTree < MAX_TREE; nCntTree++)
 	{
-		if(g_aTree[nCntTree].bUse)
+		if (g_aTree[nCntTree].bUse)
 		{
-
 		}
 	}
 
-
 #ifdef _DEBUG
 	// アルファテストON/OFF
-	if(GetKeyboardTrigger(DIK_F1))
+	if (GetKeyboardTrigger(DIK_F1))
 	{
-		g_bAlpaTest = g_bAlpaTest ? FALSE: TRUE;
+		g_bAlpaTest = g_bAlpaTest ? FALSE : TRUE;
 	}
 
 	//// アルファテストの閾値変更
@@ -176,7 +170,6 @@ void UpdateTree(void)
 	//	}
 	//}
 #endif
-
 }
 
 //=============================================================================
@@ -195,7 +188,7 @@ void DrawTree(void)
 	SetLightEnable(FALSE);
 
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
-	CAMERA *cam = GetCamera();
+	CAMERA* cam = GetCamera();
 
 	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
@@ -205,9 +198,9 @@ void DrawTree(void)
 	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	for(int i = 0; i < MAX_TREE; i++)
+	for (int i = 0; i < MAX_TREE; i++)
 	{
-		if(g_aTree[i].bUse)
+		if (g_aTree[i].bUse)
 		{
 			// ワールドマトリックスの初期化
 			mtxWorld = XMMatrixIdentity();
@@ -242,7 +235,6 @@ void DrawTree(void)
 
 			// ワールドマトリックスの設定
 			SetWorldMatrix(&mtxWorld);
-
 
 			// マテリアル設定
 			SetMaterial(g_aTree[i].material);
@@ -316,9 +308,9 @@ int SetTree(XMFLOAT3 pos, float fWidth, float fHeight, XMFLOAT4 col)
 {
 	int nIdxTree = -1;
 
-	for(int nCntTree = 0; nCntTree < MAX_TREE; nCntTree++)
+	for (int nCntTree = 0; nCntTree < MAX_TREE; nCntTree++)
 	{
-		if(!g_aTree[nCntTree].bUse)
+		if (!g_aTree[nCntTree].bUse)
 		{
 			g_aTree[nCntTree].pos = pos;
 			g_aTree[nCntTree].scl = XMFLOAT3(1.0f, 1.0f, 1.0f);
