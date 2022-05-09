@@ -375,7 +375,7 @@ void Draw(void)
 		SetDepthEnable(TRUE);
 		break;
 
-	case MODE_GAME:			// ƒQ[ƒ€‰æ–Ê‚Ì•`‰æ
+	case MODE_GAME:
 		// Implement RenderSceneToTexture() from tutorial40, GraphicsClass::RenderSceneToTexture()
 		// before rendering the gameobj, render enemy & player to the texture for shadow shader
 		if (!RenderSceneToTexture())

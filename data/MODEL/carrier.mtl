@@ -1,7 +1,7 @@
 newmtl carrier:a0326c1d_dds
 illum 4
 Kd 0.00 0.00 0.00
-Ka 0.17 0.17 0.17
+Ka 0.85 0.85 0.85
 Tf 1.00 1.00 1.00
 map_Kd a0326c1d.png
 Ni 1.00
@@ -10,7 +10,7 @@ Ns 0.06
 newmtl carrier:bef6eb8_dds
 illum 4
 Kd 0.00 0.00 0.00
-Ka 0.17 0.17 0.17
+Ka 0.85 0.85 0.85
 Tf 1.00 1.00 1.00
 map_Kd 6bef6eb8.png
 Ni 1.00
@@ -19,7 +19,7 @@ Ns 0.06
 newmtl carrier:cfc9e4e_dds
 illum 4
 Kd 0.00 0.00 0.00
-Ka 0.17 0.17 0.17
+Ka 0.85 0.85 0.85
 Tf 1.00 1.00 1.00
 map_Kd 7cfc9e4e.png
 Ni 1.00
@@ -28,7 +28,7 @@ Ns 0.06
 newmtl carrier:d8a55a9f_dds
 illum 4
 Kd 0.00 0.00 0.00
-Ka 0.17 0.17 0.17
+Ka 0.85 0.85 0.85
 Tf 1.00 1.00 1.00
 map_Kd d8a55a9f.png
 Ni 1.00

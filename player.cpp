@@ -189,7 +189,7 @@ void UpdatePlayer(void)
 	hitPosition.y = g_Player.pos.y - PLAYER_OFFSET_Y;	// 外れた時用に初期化しておく
 	bool ans = RayHitField(g_Player.pos, &hitPosition, &normal);
 	g_Player.pos.y = hitPosition.y + PLAYER_OFFSET_Y;
-
+	
 	// 弾発射処理
 	if (GetKeyboardTrigger(DIK_SPACE))
 	{
@@ -288,34 +288,11 @@ void UpdatePlayer(void)
 //=============================================================================
 void DrawPlayer(void)
 {
-	// カリング無効
 	SetRasterizeState(CULL_MODE_NONE);
 
-	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
+	auto mtxWorld = XMLoadFloat4x4(&g_Player.mtxWorld);
 
-	// world matrixの初期化
-	mtxWorld = XMMatrixIdentity();
-
-	// スケールを反映
-	mtxScl = XMMatrixScaling(g_Player.scl.x, g_Player.scl.y, g_Player.scl.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-	// 回転を反映
-	mtxRot = XMMatrixRotationRollPitchYaw(g_Player.rot.x, g_Player.rot.y + XM_PI, g_Player.rot.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-	//// クォータニオンを反映
-	XMMATRIX quatMatrix = XMMatrixRotationQuaternion(XMLoadFloat4(&g_Player.quaternion));
-	mtxWorld = XMMatrixMultiply(mtxWorld, quatMatrix);
-
-	// 移動を反映
-	mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-	// world matrixの設定
 	SetWorldMatrix(&mtxWorld);
-
-	XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
 
 	SetFuchi(1);
 	// モデル描画
@@ -324,32 +301,10 @@ void DrawPlayer(void)
 	// パーツの階層アニメーション
 	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
 	{
-		// world matrixの初期化
-		mtxWorld = XMMatrixIdentity();
-
-		// スケールを反映
-		mtxScl = XMMatrixScaling(g_Parts[i].scl.x, g_Parts[i].scl.y, g_Parts[i].scl.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
-
-		// 回転を反映
-		mtxRot = XMMatrixRotationRollPitchYaw(g_Parts[i].rot.x, g_Parts[i].rot.y, g_Parts[i].rot.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-		// 移動を反映
-		mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
-		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-		if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
-		{
-			mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
-			// ↑
-			// g_Player.mtxWorldを指している
-		}
-
-		XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
-
 		// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
 		if (g_Parts[i].use == FALSE) continue;
+
+		auto mtxWorld = XMLoadFloat4x4(&g_Parts[i].mtxWorld);
 
 		// world matrixの設定
 		SetWorldMatrix(&mtxWorld);
@@ -382,6 +337,8 @@ bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightPro
 	XMMATRIX mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
+	XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
+
 	if (!RenderModelToTexture(&g_Player.model,
 		xmmatrix2d3dmatrix(mtxWorld),
 		lightViewMatrix, lightProjectionMatrix))
@@ -401,12 +358,17 @@ bool RenderPlayerWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightPro
 		XMMATRIX mtxTranslate = XMMatrixTranslation(g_Parts[i].pos.x, g_Parts[i].pos.y, g_Parts[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
+
 		if (g_Parts[i].parent != NULL)	// 子供だったら親と結合する
 		{
 			mtxWorld = XMMatrixMultiply(mtxWorld, XMLoadFloat4x4(&g_Parts[i].parent->mtxWorld));
 			// ↑
 			// g_Player.mtxWorldを指している
 		}
+
+		XMStoreFloat4x4(&g_Parts[i].mtxWorld, mtxWorld);
+
+		if (g_Parts[i].use == FALSE) continue;
 
 		if (!RenderModelToTexture(&g_Parts[i].model,
 			xmmatrix2d3dmatrix(mtxWorld),
