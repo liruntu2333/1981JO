@@ -14,10 +14,10 @@
 //#define DEBUG_SHADER
 
 //*********************************************************
-// 構造体
+// STRUCT
 //*********************************************************
 
-// マテリアル用定数バッファ構造体
+// Material 用定数バッファSTRUCT
 struct MATERIAL_CBUFFER
 {
 	XMFLOAT4	Ambient;
@@ -29,7 +29,7 @@ struct MATERIAL_CBUFFER
 	float		Dummy[2];				// 16byte境界用
 };
 
-// ライト用フラグ構造体
+// ライト用フラグSTRUCT
 struct LIGHTFLAGS
 {
 	int			Type;		//ライトタイプ（enum LIGHT_TYPE）
@@ -37,7 +37,7 @@ struct LIGHTFLAGS
 	int			Dummy[2];
 };
 
-// ライト用定数バッファ構造体
+// ライト用定数バッファSTRUCT
 struct LIGHT_CBUFFER
 {
 	XMFLOAT4	Direction[LIGHT_MAX];	// ライトの方向
@@ -57,7 +57,7 @@ struct LIGHT2_CBUFFER
 	float		padding;
 };
 
-// フォグ用定数バッファ構造体
+// フォグ用定数バッファSTRUCT
 struct FOG_CBUFFER
 {
 	XMFLOAT4	Fog;					// フォグ量
@@ -74,13 +74,13 @@ struct FUCHI
 };
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 static void SetLightBuffer(void);
 void SetShadowLightBuffer(void);
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static D3D_FEATURE_LEVEL       g_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
 
@@ -750,7 +750,7 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_ImmediateContext->VSSetConstantBuffers(2, 1, &g_ProjectionBuffer);
 	g_ImmediateContext->PSSetConstantBuffers(2, 1, &g_ProjectionBuffer);
 
-	//マテリアル情報
+	//Material 情報
 	hBufferDesc.ByteWidth = sizeof(MATERIAL_CBUFFER);
 	g_D3DDevice->CreateBuffer(&hBufferDesc, NULL, &g_MaterialBuffer);
 	g_ImmediateContext->VSSetConstantBuffers(3, 1, &g_MaterialBuffer);
@@ -818,7 +818,7 @@ HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_ShadowLight.position = XMFLOAT3(0.f, 0.f, 100.f);
 	SetShadowLightBuffer();
 
-	//マテリアル初期化
+	//Material 初期化
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);

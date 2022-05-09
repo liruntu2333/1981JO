@@ -11,7 +11,7 @@
 //
 
 //*********************************************************
-// マクロ定義
+// MACROS
 //*********************************************************
 #define LIGHT_MAX		(5)
 
@@ -45,10 +45,10 @@ enum RASTERIZE_STATE
 };
 
 //*********************************************************
-// 構造体
+// STRUCT
 //*********************************************************
 
-// 頂点構造体
+// 頂点STRUCT
 struct VERTEX_3D
 {
 	XMFLOAT3	Position;
@@ -57,7 +57,7 @@ struct VERTEX_3D
 	XMFLOAT2	TexCoord;
 };
 
-// マテリアル構造体
+// Material STRUCT
 struct MATERIAL
 {
 	XMFLOAT4	Ambient;
@@ -68,7 +68,7 @@ struct MATERIAL
 	int			noTexSampling;
 };
 
-// ライト構造体
+// ライトSTRUCT
 struct LIGHT {
 	XMFLOAT3	Direction;	// ライトの方向
 	XMFLOAT3	Position;	// ライトの位置
@@ -79,7 +79,7 @@ struct LIGHT {
 	int			Enable;		// ライト種別・有効フラグ
 };
 
-// フォグ構造体
+// フォグSTRUCT
 struct FOG {
 	float		FogStart;	// フォグの開始距離
 	float		FogEnd;		// フォグの最大距離
@@ -92,7 +92,7 @@ struct LIGHT2 {
 };
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);
 void UninitRenderer(void);

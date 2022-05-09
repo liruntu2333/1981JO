@@ -13,9 +13,9 @@
 #include "player.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
-#define TEXTURE_MAX			(1)			// テクスチャの数
+#define TEXTURE_MAX			(1)
 
 #define	PARTICLE_SIZE_X		(40.0f)		// 頂点サイズ
 #define	PARTICLE_SIZE_Y		(40.0f)		// 頂点サイズ
@@ -27,7 +27,7 @@
 //#undef DISP_SHADOW
 
 //*****************************************************************************
-// 構造体定義
+// STRUCT定義
 //*****************************************************************************
 typedef struct
 {
@@ -35,7 +35,7 @@ typedef struct
 	XMFLOAT3		rot;			// 回転
 	XMFLOAT3		scale;			// スケール
 	XMFLOAT3		move;			// 移動量
-	MATERIAL		material;		// マテリアル
+	MATERIAL		material;		// Material
 	float			fSizeX;			// 幅
 	float			fSizeY;			// 高さ
 	int				nIdxShadow;		// 影ID
@@ -44,17 +44,17 @@ typedef struct
 } PARTICLE;
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 HRESULT MakeVertexParticle(void);
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点バッファ
 
-static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
-static int							g_TexNo;					// テクスチャ番号
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
+static int							g_TexNo;
 
 static PARTICLE					g_aParticle[MAX_PARTICLE];		// パーティクルワーク
 static XMFLOAT3					g_posBase;						// ビルボード発生位置
@@ -75,7 +75,6 @@ static BOOL						g_Load = FALSE;
 //=============================================================================
 HRESULT InitParticle(void)
 {
-	// 頂点情報の作成
 	MakeVertexParticle();
 
 	// テクスチャ生成
@@ -263,7 +262,7 @@ void DrawParticle(void)
 	{
 		if (g_aParticle[nCntParticle].bUse)
 		{
-			// ワールドマトリックスの初期化
+			// world matrixの初期化
 			mtxWorld = XMMatrixIdentity();
 
 			// ビューマトリックスを取得
@@ -295,10 +294,10 @@ void DrawParticle(void)
 			mtxTranslate = XMMatrixTranslation(g_aParticle[nCntParticle].pos.x, g_aParticle[nCntParticle].pos.y, g_aParticle[nCntParticle].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ワールドマトリックスの設定
+			// world matrixの設定
 			SetWorldMatrix(&mtxWorld);
 
-			// マテリアル設定
+			// Material 設定
 			SetMaterial(g_aParticle[nCntParticle].material);
 
 			// ポリゴンの描画
@@ -320,7 +319,6 @@ void DrawParticle(void)
 }
 
 //=============================================================================
-// 頂点情報の作成
 //=============================================================================
 HRESULT MakeVertexParticle(void)
 {
@@ -371,7 +369,7 @@ HRESULT MakeVertexParticle(void)
 }
 
 //=============================================================================
-// マテリアルカラーの設定
+// Material カラーの設定
 //=============================================================================
 void SetColorParticle(int nIdxParticle, XMFLOAT4 col)
 {

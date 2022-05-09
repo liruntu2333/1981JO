@@ -16,7 +16,7 @@
 #include "depthshader.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
 #define	MODEL_PLAYER		"data/MODEL/carrier.obj"			// 読み込むモデル名
 #define	MODEL_PLAYER_PARTS	"data/MODEL/frigate.obj"			// 読み込むモデル名
@@ -30,11 +30,11 @@
 #define PLAYER_PARTS_MAX	(2)								// プレイヤーのパーツの数
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static PLAYER		g_Player;						// プレイヤー
 
@@ -293,7 +293,7 @@ void DrawPlayer(void)
 
 	XMMATRIX mtxScl, mtxRot, mtxTranslate, mtxWorld;
 
-	// ワールドマトリックスの初期化
+	// world matrixの初期化
 	mtxWorld = XMMatrixIdentity();
 
 	// スケールを反映
@@ -312,7 +312,7 @@ void DrawPlayer(void)
 	mtxTranslate = XMMatrixTranslation(g_Player.pos.x, g_Player.pos.y, g_Player.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-	// ワールドマトリックスの設定
+	// world matrixの設定
 	SetWorldMatrix(&mtxWorld);
 
 	XMStoreFloat4x4(&g_Player.mtxWorld, mtxWorld);
@@ -324,7 +324,7 @@ void DrawPlayer(void)
 	// パーツの階層アニメーション
 	for (int i = 0; i < PLAYER_PARTS_MAX; i++)
 	{
-		// ワールドマトリックスの初期化
+		// world matrixの初期化
 		mtxWorld = XMMatrixIdentity();
 
 		// スケールを反映
@@ -351,7 +351,7 @@ void DrawPlayer(void)
 		// 使われているなら処理する。ここまで処理している理由は他のパーツがこのパーツを参照している可能性があるから。
 		if (g_Parts[i].use == FALSE) continue;
 
-		// ワールドマトリックスの設定
+		// world matrixの設定
 		SetWorldMatrix(&mtxWorld);
 
 		SetFuchi(1);

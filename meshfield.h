@@ -1,13 +1,13 @@
 //=============================================================================
 //
-// メッシュ地面の処理 [meshfield.h]
+// [meshfield.h]
 // Created by Li Runtu 2022 liruntu2333@gmail.com
 //
 //=============================================================================
 #pragma once
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 	int nNumBlockX, int nNumBlockZ, float nBlockSizeX, float nBlockSizeZ);

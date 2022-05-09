@@ -10,9 +10,9 @@
 #include "sound.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
-#define TEXTURE_MAX			(1)				// テクスチャの数
+#define TEXTURE_MAX			(1)
 
 #define	BULLET_WIDTH		(20.0f)			// 頂点サイズ
 #define	BULLET_HEIGHT		(20.0f)			// 頂点サイズ
@@ -20,22 +20,22 @@
 #define	BULLET_SPEED		(5.0f)			// 弾の移動スピード
 
 //*****************************************************************************
-// 構造体定義
+// STRUCT定義
 //*****************************************************************************
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 HRESULT MakeVertexBullet(void);
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static ID3D11Buffer* g_VertexBuffer = nullptr;	// 頂点バッファ
-static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
 
 static BULLET						g_Bullet[MAX_BULLET];	// 木ワーク
-static int							g_TexNo;				// テクスチャ番号
+static int							g_TexNo;
 
 static char* g_TextureName[TEXTURE_MAX] =
 {
@@ -156,7 +156,7 @@ void DrawBullet(void)
 	{
 		if (g_Bullet[i].use)
 		{
-			// ワールドマトリックスの初期化
+			// world matrixの初期化
 			mtxWorld = XMMatrixIdentity();
 
 			// スケールを反映
@@ -171,12 +171,12 @@ void DrawBullet(void)
 			mtxTranslate = XMMatrixTranslation(g_Bullet[i].pos.x, g_Bullet[i].pos.y, g_Bullet[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ワールドマトリックスの設定
+			// world matrixの設定
 			SetWorldMatrix(&mtxWorld);
 
 			XMStoreFloat4x4(&g_Bullet[i].mtxWorld, mtxWorld);
 
-			// マテリアル設定
+			// Material 設定
 			SetMaterial(g_Bullet[i].material);
 
 			// テクスチャ設定
@@ -192,7 +192,6 @@ void DrawBullet(void)
 }
 
 //=============================================================================
-// 頂点情報の作成
 //=============================================================================
 HRESULT MakeVertexBullet(void)
 {

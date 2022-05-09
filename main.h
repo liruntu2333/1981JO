@@ -40,7 +40,7 @@ using namespace DirectX;
 #pragma comment (lib, "dinput8.lib")
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
 
 #define SCREEN_WIDTH	(1280)			// ウインドウの幅
@@ -55,7 +55,7 @@ using namespace DirectX;
 #define	MAP_LEFT		(-MAP_W/2)
 #define	MAP_RIGHT		(MAP_W/2)
 
-// 補間用のデータ構造体を定義
+// 補間用のデータSTRUCTを定義
 struct INTERPOLATION_DATA
 {
 	XMFLOAT3	pos;		// 頂点座標
@@ -74,7 +74,7 @@ enum
 };
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 long GetMousePosX(void);
 long GetMousePosY(void);

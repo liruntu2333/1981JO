@@ -21,6 +21,7 @@ float4 DepthPixelShader(PixelInputType input) : SV_TARGET
 
 	// Get the depth value of the pixel by dividing the Z pixel depth by the homogeneous W coordinate.
 	depthValue = input.depthPosition.z / input.depthPosition.w;
+	//depthValue = length(float3(input.depthPosition.x, input.depthPosition.y, input.depthPosition.z));
 
 	color = float4(depthValue, depthValue, depthValue, 1.0f);
 

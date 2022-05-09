@@ -11,9 +11,9 @@
 #include "tree.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
-#define TEXTURE_MAX			(5)				// テクスチャの数
+#define TEXTURE_MAX			(5)
 
 #define	TREE_WIDTH			(50.0f)			// 頂点サイズ
 #define	TREE_HEIGHT			(80.0f)			// 頂点サイズ
@@ -21,13 +21,13 @@
 #define	MAX_TREE			(256)			// 木最大数
 
 //*****************************************************************************
-// 構造体定義
+// STRUCT定義
 //*****************************************************************************
 typedef struct
 {
 	XMFLOAT3	pos;			// 位置
 	XMFLOAT3	scl;			// スケール
-	MATERIAL	material;		// マテリアル
+	MATERIAL	material;		// Material
 	float		fWidth;			// 幅
 	float		fHeight;		// 高さ
 	int			nIdxShadow;		// 影ID
@@ -35,18 +35,18 @@ typedef struct
 } TREE;
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 HRESULT MakeVertexTree(void);
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static ID3D11Buffer* g_VertexBuffer = NULL;	// 頂点バッファ
-static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
 
 static TREE					g_aTree[MAX_TREE];	// 木ワーク
-static int					g_TexNo;			// テクスチャ番号
+static int					g_TexNo;
 static BOOL					g_bAlpaTest;		// アルファテストON/OFF
 //static int				g_nAlpha;			// アルファテストの閾値
 
@@ -202,7 +202,7 @@ void DrawTree(void)
 	{
 		if (g_aTree[i].bUse)
 		{
-			// ワールドマトリックスの初期化
+			// world matrixの初期化
 			mtxWorld = XMMatrixIdentity();
 
 			// ビューマトリックスを取得
@@ -233,10 +233,10 @@ void DrawTree(void)
 			mtxTranslate = XMMatrixTranslation(g_aTree[i].pos.x, g_aTree[i].pos.y, g_aTree[i].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// ワールドマトリックスの設定
+			// world matrixの設定
 			SetWorldMatrix(&mtxWorld);
 
-			// マテリアル設定
+			// Material 設定
 			SetMaterial(g_aTree[i].material);
 
 			// テクスチャ設定
@@ -255,7 +255,6 @@ void DrawTree(void)
 }
 
 //=============================================================================
-// 頂点情報の作成
 //=============================================================================
 HRESULT MakeVertexTree(void)
 {

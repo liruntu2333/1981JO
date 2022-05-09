@@ -10,16 +10,16 @@
 #include "renderer.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
-#define TEXTURE_MAX			(1)						// テクスチャの数
+#define TEXTURE_MAX			(1)
 
 #define	MAX_MESH_WALL		(10)					// 壁の総数
 #define	VALUE_MOVE_WALL		(5.0f)					// 移動速度
 #define	VALUE_ROTATE_WALL	(D3DX_PI * 0.001f)		// 回転速度
 
 //*****************************************************************************
-// 構造体定義
+// STRUCT定義
 //*****************************************************************************
 typedef struct
 {
@@ -28,7 +28,7 @@ typedef struct
 
 	XMFLOAT3		pos;						// ポリゴン表示位置の中心座標
 	XMFLOAT3		rot;						// ポリゴンの回転角
-	MATERIAL		material;					// マテリアル
+	MATERIAL		material;					// Material
 	int				nNumBlockX, nNumBlockY;		// ブロック数
 	int				nNumVertex;					// 総頂点数
 	int				nNumVertexIndex;			// 総インデックス数
@@ -37,10 +37,10 @@ typedef struct
 } MESH_WALL;
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
-static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
-static int							g_TexNo;		// テクスチャ番号
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
+static int							g_TexNo;
 
 static MESH_WALL g_aMeshWall[MAX_MESH_WALL];		// メッシュ壁ワーク
 static int g_nNumMeshWall = 0;						// メッシュ壁の数
@@ -84,7 +84,7 @@ HRESULT InitMeshWall(XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT4 col,
 
 	g_nNumMeshWall++;
 
-	// マテリアル情報の初期化
+	// Material 情報の初期化
 	ZeroMemory(&pMesh->material, sizeof(pMesh->material));
 	pMesh->material.Diffuse = col;
 
@@ -282,7 +282,7 @@ void DrawMeshWall(void)
 		// プリミティブトポロジ設定
 		GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-		// マテリアル設定
+		// Material 設定
 		SetMaterial(pMesh->material);
 
 		// テクスチャ設定
@@ -290,7 +290,7 @@ void DrawMeshWall(void)
 
 		XMMATRIX mtxRot, mtxTranslate, mtxWorld;
 
-		// ワールドマトリックスの初期化
+		// world matrixの初期化
 		mtxWorld = XMMatrixIdentity();
 
 		// 回転を反映
@@ -301,7 +301,7 @@ void DrawMeshWall(void)
 		mtxTranslate = XMMatrixTranslation(pMesh->pos.x, pMesh->pos.y, pMesh->pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-		// ワールドマトリックスの設定
+		// world matrixの設定
 		SetWorldMatrix(&mtxWorld);
 
 		// ポリゴンの描画

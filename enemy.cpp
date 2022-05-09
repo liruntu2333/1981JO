@@ -14,7 +14,7 @@
 #include "meshfield.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
 #define	MODEL_ENEMY			"data/MODEL/cruiser.obj"		// 読み込むモデル名
 
@@ -25,11 +25,11 @@
 #define ENEMY_OFFSET_Y		(10.0f)						// エネミーの足元をあわせる
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static ENEMY			g_Enemy[MAX_ENEMY];				// エネミー
 
@@ -204,7 +204,7 @@ void DrawEnemy(void)
 	{
 		if (g_Enemy[i].use == FALSE) continue;
 
-		// ワールドマトリックスの初期化
+		// world matrixの初期化
 		mtxWorld = XMMatrixIdentity();
 
 		// スケールを反映
@@ -222,7 +222,7 @@ void DrawEnemy(void)
 		mtxTranslate = XMMatrixTranslation(g_Enemy[i].pos.x, g_Enemy[i].pos.y, g_Enemy[i].pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-		// ワールドマトリックスの設定
+		// world matrixの設定
 		SetWorldMatrix(&mtxWorld);
 
 		XMStoreFloat4x4(&g_Enemy[i].mtxWorld, mtxWorld);

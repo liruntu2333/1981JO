@@ -10,30 +10,30 @@
 #include "sprite.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
 #define TEXTURE_WIDTH				(16)	// キャラサイズ
 #define TEXTURE_HEIGHT				(32)	//
-#define TEXTURE_MAX					(1)		// テクスチャの数
+#define TEXTURE_MAX					(1)
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
-static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点情報
-static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
+static ID3D11Buffer* g_VertexBuffer = NULL;
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
 
 static char* g_TexturName[TEXTURE_MAX] = {
 	"data/TEXTURE/number.png",
 };
 
-static BOOL						g_Use;						// TRUE:使っている  FALSE:未使用
-static float					g_w, g_h;					// 幅と高さ
-static XMFLOAT3					g_Pos;						// ポリゴンの座標
-static int						g_TexNo;					// テクスチャ番号
+static BOOL						g_Use;
+static float					g_w, g_h;					// width & height
+static XMFLOAT3					g_Pos;
+static int						g_TexNo;
 
 static int						g_Score;					// スコア
 
@@ -46,7 +46,7 @@ HRESULT InitScore(void)
 {
 	ID3D11Device* pDevice = GetDevice();
 
-	//テクスチャ生成
+	// Initialize textures
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -133,7 +133,7 @@ void DrawScore(void)
 	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// マテリアル設定
+	// Material 設定
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);

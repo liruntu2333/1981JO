@@ -32,7 +32,7 @@
 #include "rendertexture.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
 #define WINDOW_NAME		"1981JO Engine"		// ウインドウのキャプション名
@@ -46,7 +46,7 @@ static const int SHADOWMAP_WIDTH = 10000;
 static const int SHADOWMAP_HEIGHT = 10000;
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);
@@ -56,7 +56,7 @@ void Draw(void);
 bool RenderSceneToTexture();
 
 //*****************************************************************************
-// グローバル変数:
+// GLOBALS:
 //*****************************************************************************
 long g_MouseX = 0;
 long g_MouseY = 0;

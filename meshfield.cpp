@@ -15,18 +15,18 @@
 #include "depthshader.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
-#define TEXTURE_MAX		(1)				// テクスチャの数
+#define TEXTURE_MAX		(1)
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 static ID3D11Buffer* g_VertexBuffer = NULL;	// 頂点バッファ
 static ID3D11Buffer* g_IndexBuffer = NULL;	// インデックスバッファ
 
-static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };	// テクスチャ情報
-static int							g_TexNo;				// テクスチャ番号
+static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
+static int							g_TexNo;
 
 static XMFLOAT3		g_posField;								// ポリゴン表示位置の中心座標
 static XMFLOAT3		g_rotField;								// ポリゴンの回転角
@@ -41,16 +41,13 @@ static char* g_TextureName[] = {
 	"data/TEXTURE/ground.jpg",
 };
 
-// 波の処理
-
 static VERTEX_3D* g_Vertex = NULL;
 
-// 波の高さ = sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
-static XMFLOAT3		g_Center;					// 波の発生場所
-static float		g_Time = 0.0f;				// 波の経過時間
-static float		g_wave_frequency = 0.0f;	// 波の周波数
-static float		g_wave_correction = 0.0f;	// 波の距離補正
-static float		g_wave_amplitude = 0.0f;	// 波の振幅
+static XMFLOAT3		g_Center;
+static float		g_Time = 0.0f;
+static float		g_wave_frequency = 0.0f;
+static float		g_wave_correction = 0.0f;
+static float		g_wave_amplitude = 0.0f;
 
 static BOOL			g_Load = FALSE;
 
@@ -60,12 +57,11 @@ static BOOL			g_Load = FALSE;
 HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 	int nNumBlockX, int nNumBlockZ, float fBlockSizeX, float fBlockSizeZ)
 {
-	// ポリゴン表示位置の中心座標を設定
 	g_posField = pos;
 
 	g_rotField = rot;
 
-	// テクスチャ生成
+	//  Initialize textrues
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		D3DX11CreateShaderResourceViewFromFile(GetDevice(),
@@ -78,32 +74,24 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 
 	g_TexNo = 0;
 
-	// ブロック数の設定
 	g_nNumBlockXField = nNumBlockX;
 	g_nNumBlockZField = nNumBlockZ;
 
-	// 頂点数の設定
 	g_nNumVertexField = (nNumBlockX + 1) * (nNumBlockZ + 1);
 
-	// インデックス数の設定
 	g_nNumVertexIndexField = (nNumBlockX + 1) * 2 * nNumBlockZ + (nNumBlockZ - 1) * 2;
 
-	// ポリゴン数の設定
 	g_nNumPolygonField = nNumBlockX * nNumBlockZ * 2 + (nNumBlockZ - 1) * 4;
 
-	// ブロックサイズの設定
 	g_fBlockSizeXField = fBlockSizeX;
 	g_fBlockSizeZField = fBlockSizeZ;
 
-	// 頂点情報をメモリに作っておく（波の為）
-	// 波の処理
-	// 波の高さ = sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
 	g_Vertex = new VERTEX_3D[g_nNumVertexField];
-	g_Center = XMFLOAT3(100.0f, 0.0f, 100.0f);		// 波の発生場所
-	g_Time = 0.0f;								// 波の経過時間(＋とーとで内側外側になる)
-	g_wave_frequency = 1.0f;					// 波の周波数（上下運動の速さ）
-	g_wave_correction = 0.02f;					// 波の距離補正（変えなくても良いと思う）
-	g_wave_amplitude = 30.0f;					// 波の振幅(波の高さ)
+	g_Center = XMFLOAT3(100.0f, 0.0f, 100.0f);
+	g_Time = 0.0f;
+	g_wave_frequency = 1.0f;
+	g_wave_correction = 0.02f;
+	g_wave_amplitude = 30.0f;
 
 	for (int z = 0; z < (g_nNumBlockZField + 1); z++)
 	{
@@ -116,14 +104,10 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 			float dx = g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.x - g_Center.x;
 			float dz = g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.z - g_Center.z;
 
-			// 波紋の中心点からの距離を得る
 			float len = (float)sqrt(dx * dx + dz * dz);
 
-			// 波の高さを、sin関数で得る
-			// 波の高さ　= sin( -経過時間 * 周波数 + 距離 * 距離補正 ) * 振幅
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].Position.y = cosf(-g_Time * g_wave_frequency + len * g_wave_correction) * g_wave_amplitude;
 
-			// 法線の設定
 			// In XY plane
 			XMVECTOR nor = { sinf(dx * g_wave_correction),
 				abs(cosf(len * g_wave_correction)),
@@ -132,10 +116,8 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 			XMStoreFloat3(&g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal, nor);
 			//g_Vertex[z * (g_nNumBlockXField + 1) + x].Normal = XMFLOAT3(0.0f, 1.0, 0.0f);
 
-			// 反射光の設定
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-			// テクスチャ座標の設定
 			float texSizeX = 1.0f;
 			float texSizeZ = 1.0f;
 			g_Vertex[z * (g_nNumBlockXField + 1) + x].TexCoord.x = texSizeX * x;
@@ -143,7 +125,7 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 		}
 	}
 
-	// 頂点バッファ生成
+	// Initialize vertex buffer
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -153,7 +135,7 @@ HRESULT InitMeshField(XMFLOAT3 pos, XMFLOAT3 rot,
 
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-	// インデックスバッファ生成
+	// Initialize index buffer
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
 	bd.ByteWidth = sizeof(unsigned short) * g_nNumVertexIndexField;
@@ -257,7 +239,6 @@ void UpdateMeshField(void)
 {
 	return;	// 処理をスキップ！
 
-	// 波の処理
 	float dt = 0.03f;
 
 	for (int z = 0; z < g_nNumBlockZField; z++)
@@ -305,7 +286,7 @@ void DrawMeshField(void)
 	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// マテリアル設定
+	// Material 設定
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Ambient = { 2.0f, 2.0f, 2.0f, 1.0f };
@@ -319,7 +300,7 @@ void DrawMeshField(void)
 
 	XMMATRIX mtxRot, mtxTranslate, mtxWorld;
 
-	// ワールドマトリックスの初期化
+	// world matrixの初期化
 	mtxWorld = XMMatrixIdentity();
 
 	// 回転を反映
@@ -330,7 +311,7 @@ void DrawMeshField(void)
 	mtxTranslate = XMMatrixTranslation(g_posField.x, g_posField.y, g_posField.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-	// ワールドマトリックスの設定
+	// world matrixの設定
 	SetWorldMatrix(&mtxWorld);
 
 	// ポリゴンの描画
@@ -353,7 +334,7 @@ bool RenderFieldWithDepthShader(D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProj
 	// Get the Identity world matrix.
 	XMMATRIX mtxRot, mtxTranslate, mtxWorld;
 
-	// ワールドマトリックスの初期化
+	// world matrixの初期化
 	mtxWorld = XMMatrixIdentity();
 
 	mtxRot = XMMatrixRotationRollPitchYaw(g_rotField.x, g_rotField.y, g_rotField.z);

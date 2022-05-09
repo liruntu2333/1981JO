@@ -10,7 +10,7 @@
 #include "camera.h"
 
 //*****************************************************************************
-// マクロ定義
+// MACROS
 //*****************************************************************************
 #define	VALUE_MOVE_MODEL	(0.50f)					// 移動速度
 #define	RATE_MOVE_MODEL		(0.20f)					// 移動慣性係数
@@ -19,10 +19,10 @@
 #define	SCALE_MODEL			(10.0f)					// 回転慣性係数
 
 //*****************************************************************************
-// 構造体定義
+// STRUCT定義
 //*****************************************************************************
 
-// マテリアル構造体
+// Material STRUCT
 struct MODEL_MATERIAL
 {
 	char						Name[256];
@@ -30,7 +30,7 @@ struct MODEL_MATERIAL
 	char						TextureName[256];
 };
 
-// 描画サブセット構造体
+// 描画サブセットSTRUCT
 struct SUBSET
 {
 	unsigned short	StartIndex;
@@ -38,7 +38,7 @@ struct SUBSET
 	MODEL_MATERIAL	Material;
 };
 
-// モデル構造体
+// モデルSTRUCT
 struct MODEL
 {
 	VERTEX_3D* VertexArray;
@@ -50,11 +50,11 @@ struct MODEL
 };
 
 //*****************************************************************************
-// グローバル変数
+// GLOBALS
 //*****************************************************************************
 
 //*****************************************************************************
-// プロトタイプ宣言
+// Prototype declaration
 //*****************************************************************************
 void LoadObj(char* FileName, MODEL* Model);
 void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short* MaterialNum);
@@ -154,7 +154,7 @@ void DrawModel(DX11_MODEL* Model)
 
 	for (unsigned short i = 0; i < Model->SubsetNum; i++)
 	{
-		// マテリアル設定
+		// Material 設定
 		SetMaterial(Model->SubsetArray[i].Material.Material);
 
 		// テクスチャ設定
@@ -302,7 +302,7 @@ void LoadObj(char* FileName, MODEL* Model)
 
 		if (strcmp(str, "mtllib") == 0)
 		{
-			//マテリアルファイル
+			//Material ファイル
 			fscanf(file, "%s", str);
 
 			char path[256];
@@ -345,7 +345,7 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 		else if (strcmp(str, "usemtl") == 0)
 		{
-			//マテリアル
+			//Material
 			fscanf(file, "%s", str);
 
 			if (sc != 0)
@@ -419,7 +419,7 @@ void LoadObj(char* FileName, MODEL* Model)
 	fclose(file);
 }
 
-//マテリアル読み込み///////////////////////////////////////////////////////////////////
+//Material 読み込み///////////////////////////////////////////////////////////////////
 void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short* MaterialNum)
 {
 	char str[256];
@@ -467,7 +467,7 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 
 		if (strcmp(str, "newmtl") == 0)
 		{
-			//マテリアル名
+			//Material 名
 			mc++;
 			fscanf(file, "%s", materialArray[mc].Name);
 			strcpy(materialArray[mc].TextureName, "");
@@ -534,7 +534,7 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 	fclose(file);
 }
 
-// モデルの全マテリアルのディフューズを取得する。Max16個分にしてある
+// モデルの全Material のディフューズを取得する。Max16個分にしてある
 void GetModelDiffuse(DX11_MODEL* Model, XMFLOAT4* diffuse)
 {
 	int max = (Model->SubsetNum < MODEL_MAX_MATERIAL) ? Model->SubsetNum : MODEL_MAX_MATERIAL;
@@ -546,7 +546,7 @@ void GetModelDiffuse(DX11_MODEL* Model, XMFLOAT4* diffuse)
 	}
 }
 
-// モデルの指定マテリアルのディフューズをセットする。
+// モデルの指定Material のディフューズをセットする。
 void SetModelDiffuse(DX11_MODEL* Model, int mno, XMFLOAT4 diffuse)
 {
 	// ディフューズ設定
