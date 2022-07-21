@@ -1,54 +1,36 @@
-//=============================================================================
-//
-// レンダリング処理 [renderer.h]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #pragma once
 
-//
-// Include
-//
-
-//*********************************************************
-// MACROS
-//*********************************************************
 #define LIGHT_MAX		(5)
 
 enum LIGHT_TYPE
 {
-	LIGHT_TYPE_NONE,		//ライト無し
-	LIGHT_TYPE_DIRECTIONAL,	//ディレクショナルライト
-	LIGHT_TYPE_POINT,		//ポイントライト
+	LIGHT_TYPE_NONE,		
+	LIGHT_TYPE_DIRECTIONAL,	
+	LIGHT_TYPE_POINT,		
 
 	LIGHT_TYPE_NUM
 };
 
 enum BLEND_MODE
 {
-	BLEND_MODE_NONE,		//ブレンド無し
-	BLEND_MODE_ALPHABLEND,	//αブレンド
-	BLEND_MODE_ADD,			//加算ブレンド
-	BLEND_MODE_SUBTRACT,	//減算ブレンド
+	BLEND_MODE_NONE,		
+	BLEND_MODE_ALPHABLEND,	
+	BLEND_MODE_ADD,			
+	BLEND_MODE_SUBTRACT,	
 
 	BLEDD_MODE_NUM
 };
 
 enum RASTERIZE_STATE
 {
-	CULL_MODE_NONE,			//カリング無し
-	CULL_MODE_FRONT,		//表のポリゴンを描画しない(CW)
-	CULL_MODE_BACK,			//裏のポリゴンを描画しない(CCW)
+	CULL_MODE_NONE,			
+	CULL_MODE_FRONT,		
+	CULL_MODE_BACK,			
 	CULL_MODE_BACK_DEPTH,
 
 	CULL_MODE_NUM
 };
 
-//*********************************************************
-// STRUCT
-//*********************************************************
-
-// 頂点STRUCT
 struct VERTEX_3D
 {
 	XMFLOAT3	Position;
@@ -57,7 +39,6 @@ struct VERTEX_3D
 	XMFLOAT2	TexCoord;
 };
 
-// Material STRUCT
 struct MATERIAL
 {
 	XMFLOAT4	Ambient;
@@ -68,22 +49,20 @@ struct MATERIAL
 	int			noTexSampling;
 };
 
-// ライトSTRUCT
 struct LIGHT {
-	XMFLOAT3	Direction;	// ライトの方向
-	XMFLOAT3	Position;	// ライトの位置
-	XMFLOAT4	Diffuse;	// 拡散光の色
-	XMFLOAT4	Ambient;	// 環境光の色
-	float		Attenuation;// 減衰率
-	int			Type;		// ライト種別・有効フラグ
-	int			Enable;		// ライト種別・有効フラグ
+	XMFLOAT3	Direction;	 
+	XMFLOAT3	Position;	 
+	XMFLOAT4	Diffuse;	 
+	XMFLOAT4	Ambient;	 
+	float		Attenuation; 
+	int			Type;		 
+	int			Enable;		 
 };
 
-// フォグSTRUCT
 struct FOG {
-	float		FogStart;	// フォグの開始距離
-	float		FogEnd;		// フォグの最大距離
-	XMFLOAT4	FogColor;	// フォグの色
+	float		FogStart;	 
+	float		FogEnd;		 
+	XMFLOAT4	FogColor;	 
 };
 
 struct LIGHT2 {
@@ -91,9 +70,6 @@ struct LIGHT2 {
 	float		padding;
 };
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
 HRESULT InitRenderer(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);
 void UninitRenderer(void);
 

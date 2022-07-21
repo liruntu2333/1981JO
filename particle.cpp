@@ -1,9 +1,3 @@
-//=============================================================================
-//
-// パーティクル処理 [particle.cpp]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #include "main.h"
 #include "renderer.h"
 #include "input.h"
@@ -12,56 +6,42 @@
 #include "particle.h"
 #include "player.h"
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
 #define TEXTURE_MAX			(1)
 
-#define	PARTICLE_SIZE_X		(40.0f)		// 頂点サイズ
-#define	PARTICLE_SIZE_Y		(40.0f)		// 頂点サイズ
-#define	VALUE_MOVE_PARTICLE	(5.0f)		// 移動速度
+#define	PARTICLE_SIZE_X		(40.0f)		 
+#define	PARTICLE_SIZE_Y		(40.0f)		 
+#define	VALUE_MOVE_PARTICLE	(5.0f)		 
 
-#define	MAX_PARTICLE		(512)		// パーティクル最大数
+#define	MAX_PARTICLE		(512)		 
 
-#define	DISP_SHADOW						// 影の表示
-//#undef DISP_SHADOW
-
-//*****************************************************************************
-// STRUCT定義
-//*****************************************************************************
+#define	DISP_SHADOW						 
 typedef struct
 {
-	XMFLOAT3		pos;			// 位置
-	XMFLOAT3		rot;			// 回転
-	XMFLOAT3		scale;			// スケール
-	XMFLOAT3		move;			// 移動量
-	MATERIAL		material;		// Material
-	float			fSizeX;			// 幅
-	float			fSizeY;			// 高さ
-	int				nIdxShadow;		// 影ID
-	int				nLife;			// 寿命
-	BOOL			bUse;			// 使用しているかどうか
+	XMFLOAT3		pos;			 
+	XMFLOAT3		rot;			 
+	XMFLOAT3		scale;			 
+	XMFLOAT3		move;			 
+	MATERIAL		material;		 
+	float			fSizeX;			 
+	float			fSizeY;			 
+	int				nIdxShadow;		 
+	int				nLife;			 
+	BOOL			bUse;			 
 } PARTICLE;
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
 HRESULT MakeVertexParticle(void);
 
-//*****************************************************************************
-// GLOBALS
-//*****************************************************************************
-static ID3D11Buffer* g_VertexBuffer = NULL;		// 頂点バッファ
+static ID3D11Buffer* g_VertexBuffer = NULL;		 
 
 static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
 static int							g_TexNo;
 
-static PARTICLE					g_aParticle[MAX_PARTICLE];		// パーティクルワーク
-static XMFLOAT3					g_posBase;						// ビルボード発生位置
-static float					g_fWidthBase = 5.0f;			// 基準の幅
-static float					g_fHeightBase = 10.0f;			// 基準の高さ
-static float					g_roty = 0.0f;					// 移動方向
-static float					g_spd = 0.0f;					// 移動スピード
+static PARTICLE					g_aParticle[MAX_PARTICLE];		 
+static XMFLOAT3					g_posBase;						 
+static float					g_fWidthBase = 5.0f;			 
+static float					g_fHeightBase = 10.0f;			 
+static float					g_roty = 0.0f;					 
+static float					g_spd = 0.0f;					 
 
 static char* g_TextureName[TEXTURE_MAX] =
 {
@@ -70,14 +50,10 @@ static char* g_TextureName[TEXTURE_MAX] =
 
 static BOOL						g_Load = FALSE;
 
-//=============================================================================
-// 初期化処理
-//=============================================================================
 HRESULT InitParticle(void)
 {
 	MakeVertexParticle();
 
-	// テクスチャ生成
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -91,7 +67,6 @@ HRESULT InitParticle(void)
 
 	g_TexNo = 0;
 
-	// パーティクルワークの初期化
 	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
 		g_aParticle[nCntParticle].pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -117,14 +92,10 @@ HRESULT InitParticle(void)
 	return S_OK;
 }
 
-//=============================================================================
-// 終了処理
-//=============================================================================
 void UninitParticle(void)
 {
 	if (g_Load == FALSE) return;
 
-	//テクスチャの解放
 	for (int nCntTex = 0; nCntTex < TEXTURE_MAX; nCntTex++)
 	{
 		if (g_Texture[nCntTex] != NULL)
@@ -134,7 +105,6 @@ void UninitParticle(void)
 		}
 	}
 
-	// 頂点バッファの解放
 	if (g_VertexBuffer != NULL)
 	{
 		g_VertexBuffer->Release();
@@ -144,25 +114,19 @@ void UninitParticle(void)
 	g_Load = FALSE;
 }
 
-//=============================================================================
-// 更新処理
-//=============================================================================
 void UpdateParticle(void)
 {
-	//PLAYER *pPlayer = GetPlayer();
-	//g_posBase = pPlayer->pos;
-
 	{
 		for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 		{
 			if (g_aParticle[nCntParticle].bUse)
-			{// 使用中
+			{ 
 				g_aParticle[nCntParticle].pos.x += g_aParticle[nCntParticle].move.x;
 				g_aParticle[nCntParticle].pos.z += g_aParticle[nCntParticle].move.z;
 
 				g_aParticle[nCntParticle].pos.y += g_aParticle[nCntParticle].move.y;
 				if (g_aParticle[nCntParticle].pos.y <= g_aParticle[nCntParticle].fSizeY / 2)
-				{// 着地した
+				{ 
 					g_aParticle[nCntParticle].pos.y = g_aParticle[nCntParticle].fSizeY / 2;
 					g_aParticle[nCntParticle].move.y = -g_aParticle[nCntParticle].move.y * 0.75f;
 				}
@@ -188,7 +152,6 @@ void UpdateParticle(void)
 
 					if (g_aParticle[nCntParticle].nLife <= 20)
 					{
-						// α値設定
 						g_aParticle[nCntParticle].material.Diffuse.w -= 0.05f;
 						if (g_aParticle[nCntParticle].material.Diffuse.w < 0.0f)
 						{
@@ -199,7 +162,6 @@ void UpdateParticle(void)
 			}
 		}
 
-		// パーティクル発生
 		{
 			XMFLOAT3 pos;
 			XMFLOAT3 move;
@@ -221,59 +183,40 @@ void UpdateParticle(void)
 
 			pos.y = fSize / 2;
 
-			// ビルボードの設定
 			SetParticle(pos, move, XMFLOAT4(0.8f, 0.7f, 0.2f, 0.85f), fSize, fSize, nLife);
 		}
 	}
 }
 
-//=============================================================================
-// 描画処理
-//=============================================================================
 void DrawParticle(void)
 {
 	XMMATRIX mtxScl, mtxTranslate, mtxWorld, mtxView;
 	CAMERA* cam = GetCamera();
 
-	// ライティングを無効に
 	SetLightEnable(FALSE);
 
-	// 加算合成に設定
 	SetBlendState(BLEND_MODE_ADD);
 
-	// Z比較無し
 	SetDepthEnable(FALSE);
 
-	// フォグ無効
 	SetFogEnable(FALSE);
 
-	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
 
-	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// テクスチャ設定
 	GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
 	for (int nCntParticle = 0; nCntParticle < MAX_PARTICLE; nCntParticle++)
 	{
 		if (g_aParticle[nCntParticle].bUse)
 		{
-			// world matrixの初期化
 			mtxWorld = XMMatrixIdentity();
 
-			// ビューマトリックスを取得
 			mtxView = XMLoadFloat4x4(&cam->mtxView);
 
-			//mtxWorld = XMMatrixInverse(nullptr, mtxView);
-			//mtxWorld.r[3].m128_f32[0] = 0.0f;
-			//mtxWorld.r[3].m128_f32[1] = 0.0f;
-			//mtxWorld.r[3].m128_f32[2] = 0.0f;
-
-			// 処理が速いしお勧め
 			mtxWorld.r[0].m128_f32[0] = mtxView.r[0].m128_f32[0];
 			mtxWorld.r[0].m128_f32[1] = mtxView.r[1].m128_f32[0];
 			mtxWorld.r[0].m128_f32[2] = mtxView.r[2].m128_f32[0];
@@ -286,43 +229,31 @@ void DrawParticle(void)
 			mtxWorld.r[2].m128_f32[1] = mtxView.r[1].m128_f32[2];
 			mtxWorld.r[2].m128_f32[2] = mtxView.r[2].m128_f32[2];
 
-			// スケールを反映
 			mtxScl = XMMatrixScaling(g_aParticle[nCntParticle].scale.x, g_aParticle[nCntParticle].scale.y, g_aParticle[nCntParticle].scale.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxScl);
 
-			// 移動を反映
 			mtxTranslate = XMMatrixTranslation(g_aParticle[nCntParticle].pos.x, g_aParticle[nCntParticle].pos.y, g_aParticle[nCntParticle].pos.z);
 			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
-			// world matrixの設定
 			SetWorldMatrix(&mtxWorld);
 
-			// Material 設定
 			SetMaterial(g_aParticle[nCntParticle].material);
 
-			// ポリゴンの描画
 			GetDeviceContext()->Draw(4, 0);
 		}
 	}
 
-	// ライティングを有効に
 	SetLightEnable(TRUE);
 
-	// 通常ブレンドに戻す
 	SetBlendState(BLEND_MODE_ALPHABLEND);
 
-	// Z比較有効
 	SetDepthEnable(TRUE);
 
-	// フォグ有効
 	SetFogEnable(TRUE);
 }
 
-//=============================================================================
-//=============================================================================
 HRESULT MakeVertexParticle(void)
 {
-	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -332,31 +263,27 @@ HRESULT MakeVertexParticle(void)
 
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-	{//頂点バッファの中身を埋める
+	{
 		D3D11_MAPPED_SUBRESOURCE msr;
 		GetDeviceContext()->Map(g_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
 		VERTEX_3D* vertex = (VERTEX_3D*)msr.pData;
 
-		// 頂点座標の設定
 		vertex[0].Position = XMFLOAT3(-PARTICLE_SIZE_X / 2, PARTICLE_SIZE_Y / 2, 0.0f);
 		vertex[1].Position = XMFLOAT3(PARTICLE_SIZE_X / 2, PARTICLE_SIZE_Y / 2, 0.0f);
 		vertex[2].Position = XMFLOAT3(-PARTICLE_SIZE_X / 2, -PARTICLE_SIZE_Y / 2, 0.0f);
 		vertex[3].Position = XMFLOAT3(PARTICLE_SIZE_X / 2, -PARTICLE_SIZE_Y / 2, 0.0f);
 
-		// 法線の設定
 		vertex[0].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 		vertex[1].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 		vertex[2].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 		vertex[3].Normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
-		// 反射光の設定
 		vertex[0].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		vertex[1].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		vertex[2].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		vertex[3].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		// テクスチャ座標の設定
 		vertex[0].TexCoord = { 0.0f, 0.0f };
 		vertex[1].TexCoord = { 1.0f, 0.0f };
 		vertex[2].TexCoord = { 0.0f, 1.0f };
@@ -368,17 +295,11 @@ HRESULT MakeVertexParticle(void)
 	return S_OK;
 }
 
-//=============================================================================
-// Material カラーの設定
-//=============================================================================
 void SetColorParticle(int nIdxParticle, XMFLOAT4 col)
 {
 	g_aParticle[nIdxParticle].material.Diffuse = col;
 }
 
-//=============================================================================
-// パーティクルの発生処理
-//=============================================================================
 int SetParticle(XMFLOAT3 pos, XMFLOAT3 move, XMFLOAT4 col, float fSizeX, float fSizeY, int nLife)
 {
 	int nIdxParticle = -1;

@@ -1,9 +1,3 @@
-//=============================================================================
-//
-// タイトル画面処理 [title.cpp]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #include "main.h"
 #include "renderer.h"
 #include "input.h"
@@ -12,23 +6,13 @@
 #include "sprite.h"
 #include "title.h"
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)
 #define TEXTURE_HEIGHT				(SCREEN_HEIGHT)
 #define TEXTURE_MAX					(3)
 
 #define TEXTURE_WIDTH_LOGO			(480)
-#define TEXTURE_HEIGHT_LOGO			(80)			//
+#define TEXTURE_HEIGHT_LOGO			(80)			
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
-
-//*****************************************************************************
-// GLOBALS
-//*****************************************************************************
 static ID3D11Buffer* g_VertexBuffer = NULL;
 static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
 
@@ -39,8 +23,8 @@ static char* g_TexturName[TEXTURE_MAX] = {
 };
 
 static BOOL						g_Use;
-static float					g_w, g_h;					// width & height
-static float					g_logoW, g_logoH;			// width & height
+static float					g_w, g_h;					   
+static float					g_logoW, g_logoH;			   
 static XMFLOAT3					g_Pos;
 static int						g_TexNo;
 
@@ -49,14 +33,10 @@ BOOL	flag_alpha;
 
 static BOOL						g_Load = FALSE;
 
-//=============================================================================
-// 初期化処理
-//=============================================================================
 HRESULT InitTitle(void)
 {
 	ID3D11Device* pDevice = GetDevice();
 
-	// Initialize textures
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -68,7 +48,6 @@ HRESULT InitTitle(void)
 			NULL);
 	}
 
-	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -77,7 +56,6 @@ HRESULT InitTitle(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-	// 変数の初期化
 	g_Use = TRUE;
 	g_w = TEXTURE_WIDTH;
 	g_h = TEXTURE_HEIGHT;
@@ -89,16 +67,12 @@ HRESULT InitTitle(void)
 	alpha = 1.0f;
 	flag_alpha = TRUE;
 
-	// BGM再生
 	PlaySound(SOUND_LABEL_BGM_sample000);
 
 	g_Load = TRUE;
 	return S_OK;
 }
 
-//=============================================================================
-// 終了処理
-//=============================================================================
 void UninitTitle(void)
 {
 	if (g_Load == FALSE) return;
@@ -121,17 +95,12 @@ void UninitTitle(void)
 	g_Load = FALSE;
 }
 
-//=============================================================================
-// 更新処理
-//=============================================================================
 void UpdateTitle(void)
 {
 	if (GetKeyboardTrigger(DIK_RETURN))
-	{// Enter押したら、ステージを切り替える
+	{ 
 		SetFade(FADE_OUT, MODE_GAME);
-		//SetFade(FADE_OUT, MODE_RESULT);
 	}
-	// ゲームパッドで入力処理
 	else if (IsButtonTriggered(0, BUTTON_START))
 	{
 		SetFade(FADE_OUT, MODE_GAME);
@@ -141,106 +110,46 @@ void UpdateTitle(void)
 		SetFade(FADE_OUT, MODE_GAME);
 	}
 
-	//if (flag_alpha == TRUE)
-	//{
-	//	alpha -= 0.02f;
-	//	if (alpha <= 0.0f)
-	//	{
-	//		alpha = 0.0f;
-	//		flag_alpha = FALSE;
-	//	}
-	//}
-	//else
-	//{
-	//	alpha += 0.02f;
-	//	if (alpha >= 1.0f)
-	//	{
-	//		alpha = 1.0f;
-	//		flag_alpha = TRUE;
-	//	}
-	//}
-
 	g_w += TEXTURE_WIDTH * 0.0001f;
 	g_h += TEXTURE_HEIGHT * 0.0001f;
 
 	g_logoW += TEXTURE_WIDTH_LOGO * 0.0005f;
 	g_logoH += TEXTURE_HEIGHT_LOGO * 0.0005f;
 
-#ifdef _DEBUG	// デバッグ情報を表示する
-	//char *str = GetDebugStr();
-	//sprintf(&str[strlen(str)], " PX:%.2f PY:%.2f", g_Pos.x, g_Pos.y);
-
+#ifdef _DEBUG	 
 #endif
 }
 
-//=============================================================================
-// 描画処理
-//=============================================================================
 void DrawTitle(void)
 {
-	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
 
-	// マトリクス設定
 	SetWorldViewProjection2D();
 
-	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// Material 設定
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	SetMaterial(material);
 
-	// タイトルの背景を描画
 	{
-		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[0]);
 
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
 		SetSprite(g_VertexBuffer, g_Pos.x, g_Pos.y, g_w, g_h, 0.0f, 0.0f, 1.0f, 1.0f);
 
-		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
 	}
 
-	// タイトルのロゴを描画
 	{
-		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[1]);
 
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
-	//	SetSprite(g_VertexBuffer, g_Pos.x, g_Pos.y, TEXTURE_WIDTH_LOGO, TEXTURE_HEIGHT_LOGO, 0.0f, 0.0f, 1.0f, 1.0f);
 		SetSpriteColor(g_VertexBuffer, g_Pos.x, g_Pos.y, g_logoW, g_logoH, 0.0f, 0.0f, 1.0f, 1.0f,
 			XMFLOAT4(1.0f, 1.0f, 1.0f, alpha));
 
-		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
 	}
 
-	//	// 加減算のテスト
-	//	SetBlendState(BLEND_MODE_ADD);		// 加算合成
-	////	SetBlendState(BLEND_MODE_SUBTRACT);	// 減算合成
-	//	for(int i=0; i<30; i++)
-	//	{
-	//		// テクスチャ設定
-	//		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[2]);
-	//
-	//		// １枚のポリゴンの頂点とテクスチャ座標を設定
-	//		float dx = 100.0f;
-	//		float dy = 100.0f;
-	//		float sx = (float)(rand() % 100);
-	//		float sy = (float)(rand() % 100);
-	//
-	//
-	//		SetSpriteColor(g_VertexBuffer, dx+sx, dy+sy, 50, 50, 0.0f, 0.0f, 1.0f, 1.0f,
-	//			XMFLOAT4(0.3f, 0.3f, 1.0f, 0.5f));
-	//
-	//		// ポリゴン描画
-	//		GetDeviceContext()->Draw(4, 0);
-	//	}
-	//	SetBlendState(BLEND_MODE_ALPHABLEND);	// 半透明処理を元に戻す
 }

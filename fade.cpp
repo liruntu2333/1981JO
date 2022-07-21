@@ -1,31 +1,15 @@
-//=============================================================================
-//
-// フェード処理 [fade.cpp]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #include "main.h"
 #include "renderer.h"
 #include "fade.h"
 #include "sound.h"
 #include "sprite.h"
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
 #define TEXTURE_WIDTH				(SCREEN_WIDTH)
-#define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	//
+#define TEXTURE_HEIGHT				(SCREEN_HEIGHT)	
 #define TEXTURE_MAX					(1)
 
-#define	FADE_RATE					(0.02f)			// フェード係数
+#define	FADE_RATE					(0.02f)			 
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
-
-//*****************************************************************************
-// GLOBALS
-//*****************************************************************************
 static ID3D11Buffer* g_VertexBuffer = NULL;
 static ID3D11ShaderResourceView* g_Texture[TEXTURE_MAX] = { NULL };
 
@@ -34,24 +18,20 @@ static char* g_TexturName[TEXTURE_MAX] = {
 };
 
 static BOOL						g_Use;
-static float					g_w, g_h;					// width & height
+static float					g_w, g_h;					   
 static XMFLOAT3					g_Pos;
 static int						g_TexNo;
 
-FADE							g_Fade = FADE_IN;			// フェードの状態
-int								g_ModeNext;					// 次のモード
-XMFLOAT4						g_Color;					// フェードのカラー（α値）
+FADE							g_Fade = FADE_IN;			 
+int								g_ModeNext;					 
+XMFLOAT4						g_Color;					 
 
 static BOOL						g_Load = FALSE;
 
-//=============================================================================
-// 初期化処理
-//=============================================================================
 HRESULT InitFade(void)
 {
 	ID3D11Device* pDevice = GetDevice();
 
-	// Initialize textures
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -63,7 +43,6 @@ HRESULT InitFade(void)
 			NULL);
 	}
 
-	// 頂点バッファ生成
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -72,7 +51,6 @@ HRESULT InitFade(void)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
-	// プレイヤーの初期化
 	g_Use = TRUE;
 	g_w = TEXTURE_WIDTH;
 	g_h = TEXTURE_HEIGHT;
@@ -86,9 +64,6 @@ HRESULT InitFade(void)
 	return S_OK;
 }
 
-//=============================================================================
-// 終了処理
-//=============================================================================
 void UninitFade(void)
 {
 	if (g_Load == FALSE) return;
@@ -111,98 +86,69 @@ void UninitFade(void)
 	g_Load = FALSE;
 }
 
-//=============================================================================
-// 更新処理
-//=============================================================================
 void UpdateFade(void)
 {
 	if (g_Fade != FADE_NONE)
-	{// フェード処理中
+	{ 
 		if (g_Fade == FADE_OUT)
-		{// フェードアウト処理
-			g_Color.w += FADE_RATE;		// α値を加算して画面を消していく
+		{ 
+			g_Color.w += FADE_RATE;		 
 			if (g_Color.w >= 1.0f)
 			{
-				// 鳴っている曲を全部止める
 				StopSound();
 
-				// フェードイン処理に切り替え
 				g_Color.w = 1.0f;
 				SetFade(FADE_IN, g_ModeNext);
 
-				// モードを設定
 				SetMode(g_ModeNext);
 			}
 		}
 		else if (g_Fade == FADE_IN)
-		{// フェードイン処理
-			g_Color.w -= FADE_RATE;		// α値を減算して画面を浮き上がらせる
+		{ 
+			g_Color.w -= FADE_RATE;		 
 			if (g_Color.w <= 0.0f)
 			{
-				// フェード処理終了
 				g_Color.w = 0.0f;
 				SetFade(FADE_NONE, g_ModeNext);
 			}
 		}
 	}
 
-#ifdef _DEBUG	// デバッグ情報を表示する
-	// PrintDebugProc("\n");
-
+#ifdef _DEBUG	 
 #endif
 }
 
-//=============================================================================
-// 描画処理
-//=============================================================================
 void DrawFade(void)
 {
-	if (g_Fade == FADE_NONE) return;	// フェードしないのなら描画しない
+	if (g_Fade == FADE_NONE) return;	 
 
-	// 加算合成に設定
-	//SetBlendState(BLEND_MODE_ADD);
-
-	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
 
-	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// Material 設定
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	SetMaterial(material);
 
-	// タイトルの背景を描画
 	{
-		// テクスチャ設定
 		GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_TexNo]);
 
-		// １枚のポリゴンの頂点とテクスチャ座標を設定
-		//SetVertex(0.0f, 0.0f, SCREEN_WIDTH, TEXTURE_WIDTH, 0.0f, 0.0f, 1.0f, 1.0f);
 		SetSpriteColor(g_VertexBuffer, SCREEN_WIDTH / 2, TEXTURE_WIDTH / 2, SCREEN_WIDTH, TEXTURE_WIDTH, 0.0f, 0.0f, 1.0f, 1.0f,
 			g_Color);
 
-		// ポリゴン描画
 		GetDeviceContext()->Draw(4, 0);
 	}
 }
 
-//=============================================================================
-// フェードの状態設定
-//=============================================================================
 void SetFade(FADE fade, int modeNext)
 {
 	g_Fade = fade;
 	g_ModeNext = modeNext;
 }
 
-//=============================================================================
-// フェードの状態取得
-//=============================================================================
 FADE GetFade(void)
 {
 	return g_Fade;

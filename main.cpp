@@ -1,9 +1,3 @@
-//=============================================================================
-//
-// メイン処理 [main.cpp]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #include "main.h"
 #include "renderer.h"
 #include "input.h"
@@ -31,23 +25,14 @@
 #include "depthshader.h"
 #include "rendertexture.h"
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
-#define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"1981JO Engine"		// ウインドウのキャプション名
+#define CLASS_NAME		"AppClass"			 
+#define WINDOW_NAME		"1981JO Engine"		 
 
-/////////////
-// GLOBALS //
-/////////////
 static const float SCREEN_DEPTH = 10000.0f;
 static const float SCREEN_NEAR = 1.0f;
 static const int SHADOWMAP_WIDTH = 10000;
 static const int SHADOWMAP_HEIGHT = 10000;
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow);
 void Uninit(void);
@@ -55,29 +40,22 @@ void Update(void);
 void Draw(void);
 bool RenderSceneToTexture();
 
-//*****************************************************************************
-// GLOBALS:
-//*****************************************************************************
 long g_MouseX = 0;
 long g_MouseY = 0;
 
 #ifdef _DEBUG
-int		g_CountFPS;							// FPSカウンタ
-char	g_DebugStr[2048] = WINDOW_NAME;		// デバッグ文字表示用
+int		g_CountFPS;							 
+char	g_DebugStr[2048] = WINDOW_NAME;		 
 
 #endif
 
-int	g_Mode = MODE_TITLE;					// 起動時の画面を設定
+int	g_Mode = MODE_TITLE;					 
 
-//=============================================================================
-// メイン関数
-//=============================================================================
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);	// 無くても良いけど、警告が出る（未使用宣言）
-	UNREFERENCED_PARAMETER(lpCmdLine);		// 無くても良いけど、警告が出る（未使用宣言）
+	UNREFERENCED_PARAMETER(hPrevInstance);	 
+	UNREFERENCED_PARAMETER(lpCmdLine);		 
 
-	// 時間計測用
 	DWORD dwExecLastTime;
 	DWORD dwFPSLastTime;
 	DWORD dwCurrentTime;
@@ -100,49 +78,42 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	HWND		hWnd;
 	MSG			msg;
 
-	// ウィンドウクラスの登録
 	RegisterClassEx(&wcex);
 
-	// ウィンドウの作成
 	hWnd = CreateWindow(CLASS_NAME,
 		WINDOW_NAME,
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,																		// ウィンドウの左座標
-		CW_USEDEFAULT,																		// ウィンドウの上座標
-		SCREEN_WIDTH + GetSystemMetrics(SM_CXDLGFRAME) * 2,									// ウィンドウ横幅
-		SCREEN_HEIGHT + GetSystemMetrics(SM_CXDLGFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION),	// ウィンドウ縦幅
+		CW_USEDEFAULT,																		 
+		CW_USEDEFAULT,																		 
+		SCREEN_WIDTH + GetSystemMetrics(SM_CXDLGFRAME) * 2,									 
+		SCREEN_HEIGHT + GetSystemMetrics(SM_CXDLGFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION),	 
 		NULL,
 		NULL,
 		hInstance,
 		NULL);
 
-	// 初期化処理(ウィンドウを作成してから行う)
 	if (FAILED(Init(hInstance, hWnd, TRUE)))
 	{
 		return -1;
 	}
 
-	// フレームカウント初期化
-	timeBeginPeriod(1);	// 分解能を設定
-	dwExecLastTime = dwFPSLastTime = timeGetTime();	// システム時刻をミリ秒単位で取得
+	timeBeginPeriod(1);	 
+	dwExecLastTime = dwFPSLastTime = timeGetTime();	 
 	dwCurrentTime = dwFrameCount = 0;
 
-	// ウインドウの表示(初期化処理の後に呼ばないと駄目)
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	// メッセージループ
 	while (1)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
-			{// PostQuitMessage()が呼ばれたらループ終了
+			{ 
 				break;
 			}
 			else
 			{
-				// メッセージの翻訳と送出
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
@@ -151,28 +122,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		{
 			dwCurrentTime = timeGetTime();
 
-			if ((dwCurrentTime - dwFPSLastTime) >= 1000)	// 1秒ごとに実行
+			if ((dwCurrentTime - dwFPSLastTime) >= 1000)	 
 			{
 #ifdef _DEBUG
 				g_CountFPS = dwFrameCount;
 #endif
-				dwFPSLastTime = dwCurrentTime;				// FPSを測定した時刻を保存
-				dwFrameCount = 0;							// カウントをクリア
+				dwFPSLastTime = dwCurrentTime;				 
+				dwFrameCount = 0;							 
 			}
 
-			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))	// 1/60秒ごとに実行
+			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))	 
 			{
-				dwExecLastTime = dwCurrentTime;	// 処理した時刻を保存
+				dwExecLastTime = dwCurrentTime;	 
 
-#ifdef _DEBUG	// デバッグ版の時だけFPSを表示する
+#ifdef _DEBUG	 
 				wsprintf(g_DebugStr, WINDOW_NAME);
 				wsprintf(&g_DebugStr[strlen(g_DebugStr)], " FPS:%d", g_CountFPS);
 #endif
 
-				Update();			// 更新処理
-				Draw();				// 描画処理
+				Update();			 
+				Draw();				 
 
-#ifdef _DEBUG	// デバッグ版の時だけ表示する
+#ifdef _DEBUG	 
 				wsprintf(&g_DebugStr[strlen(g_DebugStr)], " MX:%d MY:%d", GetMousePosX(), GetMousePosY());
 				SetWindowText(hWnd, g_DebugStr);
 #endif
@@ -182,20 +153,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 	}
 
-	timeEndPeriod(1);				// 分解能を戻す
+	timeEndPeriod(1);				 
 
-	// ウィンドウクラスの登録を解除
 	UnregisterClass(CLASS_NAME, wcex.hInstance);
 
-	// 終了処理
 	Uninit();
 
 	return (int)msg.wParam;
 }
 
-//=============================================================================
-// プロシージャ
-//=============================================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -225,34 +191,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-//=============================================================================
-// 初期化処理
-//=============================================================================
 HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	InitRenderer(hInstance, hWnd, bWindow);
 
-	// Initialize Depth Shader
 	InitDepthShader(GetDevice(), hWnd);
 
-	// Initialize Render texture helper
 	InitRenderTex(GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
 
 	InitLight();
 
-	// Initialize the shadow light object.
 	{
 		SetSLPosition(0.f, 800.0f, 0.f);
 		SetSLLookAt(0.0f, 0.0f, 0.0f);
 		GenerateSLViewMatrix();
 		GenerateSLProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
-		// Set Light position
 		D3DXVECTOR3 lightPosition = GetSLPosition();
 		LIGHT2 l2{ {lightPosition.x, lightPosition.y, lightPosition.z}, 0.f };
 		SetShadowLight(&l2);
 
-		// Set Light View & Proj Matrix
 		D3DXMATRIX matrix;
 		GetSLViewMatrix(matrix);
 		SetLightViewMatrix(&d3dmatrix2xmmatrix(matrix));
@@ -262,161 +220,117 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	InitCamera();
 
-	// 入力処理の初期化
 	InitInput(hInstance, hWnd);
 
-	// サウンドの初期化
 	InitSound(hWnd);
 
-	// ライトを有効化
 	SetLightEnable(TRUE);
 
-	// 背面ポリゴンをカリング
 	SetRasterizeState(CULL_MODE_BACK);
 
-	// フェードの初期化
 	InitFade();
 
-	// 最初のモードをセット
-	SetMode(g_Mode);	// ここはSetModeのままで！
+	SetMode(g_Mode);	 
 
 	return S_OK;
 }
 
-//=============================================================================
-// 終了処理
-//=============================================================================
 void Uninit(void)
 {
-	// 終了のモードをセット
 	SetMode(MODE_MAX);
 
-	// サウンド終了処理
 	UninitSound();
 
-	// カメラの終了処理
 	UninitCamera();
 
-	//入力の終了処理
 	UninitInput();
 
-	// レンダラーの終了処理
 	UninitRenderer();
 
-	// Shut down Depth Shader
 	ShutdownDS();
-	// Shut down Render to texture helper
 	ShutdownRenderTex();
 }
 
-//=============================================================================
-// 更新処理
-//=============================================================================
 void Update(void)
 {
-	// 入力の更新処理
 	UpdateInput();
 
-	// ライトの更新処理
 	UpdateLight();
 
-	// カメラ更新
 	UpdateCamera();
 
-	// モードによって処理を分ける
 	switch (g_Mode)
 	{
-	case MODE_TITLE:		// タイトル画面の更新
+	case MODE_TITLE:		 
 		UpdateTitle();
 		break;
 
-	case MODE_GAME:			// ゲーム画面の更新
+	case MODE_GAME:			 
 		UpdateGame();
 		break;
 
-	case MODE_RESULT:		// リザルト画面の更新
+	case MODE_RESULT:		 
 		UpdateResult();
 		break;
 	}
 
-	// フェード処理の更新
 	UpdateFade();
 }
 
-//=============================================================================
-// 描画処理
-//=============================================================================
 void Draw(void)
 {
-	// バックバッファクリア
 	Clear();
 
 	SetCamera();
 
-	// モードによって処理を分ける
 	switch (g_Mode)
 	{
-	case MODE_TITLE:		// タイトル画面の描画
+	case MODE_TITLE:		 
 		SetViewPort(TYPE_FULL_SCREEN);
 
-		// 2Dの物を描画する処理
-		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawTitle();
 
-		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 
 	case MODE_GAME:
-		// Implement RenderSceneToTexture() from tutorial40, GraphicsClass::RenderSceneToTexture()
-		// before rendering the gameobj, render enemy & player to the texture for shadow shader
 		if (!RenderSceneToTexture())
 		{
 #ifdef _DEBUG
 			PrintDebugProc("render depth texture failed\n");
-#endif // _DEBUG
+#endif  
 		}
 
 		DrawGame();
 		break;
 
-	case MODE_RESULT:		// リザルト画面の描画
+	case MODE_RESULT:		 
 		SetViewPort(TYPE_FULL_SCREEN);
 
-		// 2Dの物を描画する処理
-		// Z比較なし
 		SetDepthEnable(FALSE);
 
-		// ライティングを無効
 		SetLightEnable(FALSE);
 
 		DrawResult();
 
-		// ライティングを有効に
 		SetLightEnable(TRUE);
 
-		// Z比較あり
 		SetDepthEnable(TRUE);
 		break;
 	}
 
-	// フェード描画
 	DrawFade();
 
 #ifdef _DEBUG
-	// デバッグ表示
 	DrawDebugProc();
 #endif
 
-	// バックバッファ、フロントバッファ入れ替え
 	Present();
 }
 
@@ -437,55 +351,38 @@ char* GetDebugStr(void)
 }
 #endif
 
-//=============================================================================
-// モードの設定
-//=============================================================================
 void SetMode(int mode)
 {
-	// モードを変える前に全部メモリを解放しちゃう
-
-	// タイトル画面の終了処理
 	UninitTitle();
 
-	// ゲーム画面の終了処理
 	UninitGame();
 
-	// リザルト画面の終了処理
 	UninitResult();
 
-	g_Mode = mode;	// 次のモードをセットしている
+	g_Mode = mode;	 
 
 	switch (g_Mode)
 	{
 	case MODE_TITLE:
-		// タイトル画面の初期化
 		InitTitle();
 		break;
 
 	case MODE_GAME:
-		// ゲーム画面の初期化
 		InitGame();
 		break;
 
 	case MODE_RESULT:
-		// リザルト画面の初期化
 		InitResult();
 		break;
 
-		// ゲーム終了時の処理
 	case MODE_MAX:
-		// エネミーの終了処理
 		UninitEnemy();
 
-		// プレイヤーの終了処理
 		UninitPlayer();
 		break;
 	}
 }
 
-//=============================================================================
-// モードの取得
-//=============================================================================
 int GetMode(void)
 {
 	return g_Mode;
@@ -500,45 +397,29 @@ bool RenderSceneToTexture()
 
 	bool result;
 
-	// Set the render target to be the render to texture.
 	SetRTRenderTarget(GetDeviceContext());
 
-	// Clear the render to texture.
 	ClearRTRenderTarget(GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Generate the light view matrix based on the light's position.
 	GenerateSLViewMatrix();
 
-	// Get the view and orthographic matrices from the light object.
 	GetSLViewMatrix(lightViewMatrix);
 	GetSLProjectionMatrix(lightProjectionMatrix);
 
-	// Render Player model with depth shader.
 	result = RenderPlayerWithDepthShader(lightViewMatrix, lightProjectionMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Render Enemy model with depth shader.
 	result = RenderEnemyWithDepthShader(lightViewMatrix, lightProjectionMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Render the ground model with the depth shader.
-	//result = RenderFieldWithDepthShader(lightViewMatrix, lightProjectionMatrix);
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
-	// Reset the render target back to the original back buffer and not the render to texture anymore.
-	// Reset the viewport back to the original.
 	ResetRenderer();
 
-	// Setup depth texture in formal render.
 	ID3D11ShaderResourceView* pShaderResourceView = GetRTShaderResourceView();
 	GetDeviceContext()->PSSetShaderResources(1, 1, &pShaderResourceView);
 

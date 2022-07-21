@@ -1,15 +1,9 @@
-//=============================================================================
-//
-// メイン処理 [main.h]
-// Author :
-//
-//=============================================================================
 #pragma once
 
 #pragma warning(push)
 #pragma warning(disable:4005)
 
-#define _CRT_SECURE_NO_WARNINGS			// scanf のwarning防止
+#define _CRT_SECURE_NO_WARNINGS			  
 #include <stdio.h>
 
 #include <d3d11.h>
@@ -19,18 +13,14 @@
 #include <DirectXMath.h>
 #include <d3dx10math.h>
 
-// 本来はヘッダに書かない方が良い
 using namespace DirectX;
 
-#define DIRECTINPUT_VERSION 0x0800		// 警告対処
+#define DIRECTINPUT_VERSION 0x0800		 
 #include "dinput.h"
 #include "mmsystem.h"
 
 #pragma warning(pop)
 
-//*****************************************************************************
-// ライブラリのリンク
-//*****************************************************************************
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 #pragma comment (lib, "d3dx11.lib")
@@ -39,14 +29,10 @@ using namespace DirectX;
 #pragma comment (lib, "dxguid.lib")
 #pragma comment (lib, "dinput8.lib")
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
-
-#define SCREEN_WIDTH	(1280)			// ウインドウの幅
-#define SCREEN_HEIGHT	(720)			// ウインドウの高さ
-#define SCREEN_CENTER_X	(SCREEN_WIDTH / 2)	// ウインドウの中心Ｘ座標
-#define SCREEN_CENTER_Y	(SCREEN_HEIGHT / 2)	// ウインドウの中心Ｙ座標
+#define SCREEN_WIDTH	(1280)			 
+#define SCREEN_HEIGHT	(720)			 
+#define SCREEN_CENTER_X	(SCREEN_WIDTH / 2)	 
+#define SCREEN_CENTER_Y	(SCREEN_HEIGHT / 2)	 
 
 #define	MAP_W			(1280.0f)
 #define	MAP_H			(1280.0f)
@@ -55,27 +41,23 @@ using namespace DirectX;
 #define	MAP_LEFT		(-MAP_W/2)
 #define	MAP_RIGHT		(MAP_W/2)
 
-// 補間用のデータSTRUCTを定義
 struct INTERPOLATION_DATA
 {
-	XMFLOAT3	pos;		// 頂点座標
-	XMFLOAT3	rot;		// 回転
-	XMFLOAT3	scl;		// 拡大縮小
-	float		frame;		// 実行フレーム数 ( dt = 1.0f/frame )
+	XMFLOAT3	pos;		 
+	XMFLOAT3	rot;		 
+	XMFLOAT3	scl;		 
+	float		frame;		      
 };
 
 enum
 {
-	MODE_TITLE = 0,			// タイトル画面
-	MODE_TUTORIAL,			// ゲーム説明画面
-	MODE_GAME,				// ゲーム画面
-	MODE_RESULT,			// リザルト画面
+	MODE_TITLE = 0,			 
+	MODE_TUTORIAL,			 
+	MODE_GAME,				 
+	MODE_RESULT,			 
 	MODE_MAX
 };
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
 long GetMousePosX(void);
 long GetMousePosY(void);
 char* GetDebugStr(void);

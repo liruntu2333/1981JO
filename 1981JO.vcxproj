@@ -147,10 +147,8 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
-    <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="depthshader.h" />
-    <ClInclude Include="EffectsHelper.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
@@ -176,7 +174,6 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
-    <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="depthshader.cpp" />
     <ClCompile Include="enemy.cpp" />

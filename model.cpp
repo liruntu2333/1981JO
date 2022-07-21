@@ -1,28 +1,14 @@
-//=============================================================================
-//
-// モデルの処理 [model.cpp]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #define _CRT_SECURE_NO_WARNINGS
 #include "main.h"
 #include "model.h"
 #include "camera.h"
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
-#define	VALUE_MOVE_MODEL	(0.50f)					// 移動速度
-#define	RATE_MOVE_MODEL		(0.20f)					// 移動慣性係数
-#define	VALUE_ROTATE_MODEL	(XM_PI * 0.05f)			// 回転速度
-#define	RATE_ROTATE_MODEL	(0.20f)					// 回転慣性係数
-#define	SCALE_MODEL			(10.0f)					// 回転慣性係数
+#define	VALUE_MOVE_MODEL	(0.50f)					 
+#define	RATE_MOVE_MODEL		(0.20f)					 
+#define	VALUE_ROTATE_MODEL	(XM_PI * 0.05f)			 
+#define	RATE_ROTATE_MODEL	(0.20f)					 
+#define	SCALE_MODEL			(10.0f)					 
 
-//*****************************************************************************
-// STRUCT定義
-//*****************************************************************************
-
-// Material STRUCT
 struct MODEL_MATERIAL
 {
 	char						Name[256];
@@ -30,7 +16,6 @@ struct MODEL_MATERIAL
 	char						TextureName[256];
 };
 
-// 描画サブセットSTRUCT
 struct SUBSET
 {
 	unsigned short	StartIndex;
@@ -38,7 +23,6 @@ struct SUBSET
 	MODEL_MATERIAL	Material;
 };
 
-// モデルSTRUCT
 struct MODEL
 {
 	VERTEX_3D* VertexArray;
@@ -49,26 +33,15 @@ struct MODEL
 	unsigned short	SubsetNum;
 };
 
-//*****************************************************************************
-// GLOBALS
-//*****************************************************************************
-
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
 void LoadObj(char* FileName, MODEL* Model);
 void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short* MaterialNum);
 
-//=============================================================================
-// 初期化処理
-//=============================================================================
 void LoadModel(char* FileName, DX11_MODEL* Model)
 {
 	MODEL model;
 
 	LoadObj(FileName, &model);
 
-	// 頂点バッファ生成
 	{
 		D3D11_BUFFER_DESC bd;
 		ZeroMemory(&bd, sizeof(bd));
@@ -84,7 +57,6 @@ void LoadModel(char* FileName, DX11_MODEL* Model)
 		GetDevice()->CreateBuffer(&bd, &sd, &Model->VertexBuffer);
 	}
 
-	// インデックスバッファ生成
 	{
 		D3D11_BUFFER_DESC bd;
 		ZeroMemory(&bd, sizeof(bd));
@@ -100,7 +72,6 @@ void LoadModel(char* FileName, DX11_MODEL* Model)
 		GetDevice()->CreateBuffer(&bd, &sd, &Model->IndexBuffer);
 	}
 
-	// サブセット設定
 	{
 		Model->SubsetArray = new DX11_SUBSET[model.SubsetNum];
 		Model->SubsetNum = model.SubsetNum;
@@ -126,9 +97,6 @@ void LoadModel(char* FileName, DX11_MODEL* Model)
 	delete[] model.SubsetArray;
 }
 
-//=============================================================================
-// 終了処理
-//=============================================================================
 void UnloadModel(DX11_MODEL* Model)
 {
 	if (Model->VertexBuffer)		Model->VertexBuffer->Release();
@@ -136,49 +104,37 @@ void UnloadModel(DX11_MODEL* Model)
 	if (Model->SubsetArray)		delete[] Model->SubsetArray;
 }
 
-//=============================================================================
-// 描画処理
-//=============================================================================
 void DrawModel(DX11_MODEL* Model)
 {
-	// 頂点バッファ設定
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &Model->VertexBuffer, &stride, &offset);
 
-	// インデックスバッファ設定
 	GetDeviceContext()->IASetIndexBuffer(Model->IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-	// プリミティブトポロジ設定
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	for (unsigned short i = 0; i < Model->SubsetNum; i++)
 	{
-		// Material 設定
 		SetMaterial(Model->SubsetArray[i].Material.Material);
 
-		// テクスチャ設定
 		if (Model->SubsetArray[i].Material.Material.noTexSampling == 0)
 		{
 			GetDeviceContext()->PSSetShaderResources(0, 1, &Model->SubsetArray[i].Material.Texture);
 		}
 
-		// ポリゴン描画
 		GetDeviceContext()->DrawIndexed(Model->SubsetArray[i].IndexNum, Model->SubsetArray[i].StartIndex, 0);
 	}
 }
 
 bool RenderModelToTexture(DX11_MODEL* Model, D3DXMATRIX mtxWorld, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix)
 {
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &Model->VertexBuffer, &stride, &offset);
 
-	// Set the index buffer to active in the input assembler so it can be rendered.
 	GetDeviceContext()->IASetIndexBuffer(Model->IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	for (unsigned short i = 0; i < Model->SubsetNum; i++)
@@ -194,7 +150,6 @@ bool RenderModelToTexture(DX11_MODEL* Model, D3DXMATRIX mtxWorld, D3DXMATRIX lig
 	return true;
 }
 
-//モデル読込////////////////////////////////////////////
 void LoadObj(char* FileName, MODEL* Model)
 {
 	XMFLOAT3* positionArray;
@@ -224,7 +179,6 @@ void LoadObj(char* FileName, MODEL* Model)
 		return;
 	}
 
-	//要素数カウント
 	while (TRUE)
 	{
 		fscanf(file, "%s", str);
@@ -260,7 +214,6 @@ void LoadObj(char* FileName, MODEL* Model)
 				c = fgetc(file);
 			} while (c != '\n' && c != '\r');
 
-			//四角は三角に分割
 			if (in == 4)
 				in = 6;
 
@@ -268,7 +221,6 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 	}
 
-	//メモリ確保
 	positionArray = new XMFLOAT3[positionNum];
 	normalArray = new XMFLOAT3[normalNum];
 	texcoordArray = new XMFLOAT2[texcoordNum];
@@ -282,7 +234,6 @@ void LoadObj(char* FileName, MODEL* Model)
 	Model->SubsetArray = new SUBSET[subsetNum];
 	Model->SubsetNum = subsetNum;
 
-	//要素読込
 	XMFLOAT3* position = positionArray;
 	XMFLOAT3* normal = normalArray;
 	XMFLOAT2* texcoord = texcoordArray;
@@ -302,7 +253,6 @@ void LoadObj(char* FileName, MODEL* Model)
 
 		if (strcmp(str, "mtllib") == 0)
 		{
-			//Material ファイル
 			fscanf(file, "%s", str);
 
 			char path[256];
@@ -313,12 +263,10 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 		else if (strcmp(str, "o") == 0)
 		{
-			//オブジェクト名
 			fscanf(file, "%s", str);
 		}
 		else if (strcmp(str, "v") == 0)
 		{
-			//頂点座標
 			fscanf(file, "%f", &position->x);
 			fscanf(file, "%f", &position->y);
 			fscanf(file, "%f", &position->z);
@@ -329,7 +277,6 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 		else if (strcmp(str, "vn") == 0)
 		{
-			//法線
 			fscanf(file, "%f", &normal->x);
 			fscanf(file, "%f", &normal->y);
 			fscanf(file, "%f", &normal->z);
@@ -337,7 +284,6 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 		else if (strcmp(str, "vt") == 0)
 		{
-			//テクスチャ座標
 			fscanf(file, "%f", &texcoord->x);
 			fscanf(file, "%f", &texcoord->y);
 			texcoord->y = 1.0f - texcoord->y;
@@ -345,7 +291,6 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 		else if (strcmp(str, "usemtl") == 0)
 		{
-			//Material
 			fscanf(file, "%s", str);
 
 			if (sc != 0)
@@ -369,7 +314,6 @@ void LoadObj(char* FileName, MODEL* Model)
 		}
 		else if (strcmp(str, "f") == 0)
 		{
-			//面
 			in = 0;
 
 			do
@@ -380,7 +324,6 @@ void LoadObj(char* FileName, MODEL* Model)
 				Model->VertexArray[vc].Position = positionArray[atoi(s) - 1];
 				if (s[strlen(s) + 1] != '/')
 				{
-					//テクスチャ座標が存在しない場合もある
 					s = strtok(NULL, "/");
 					Model->VertexArray[vc].TexCoord = texcoordArray[atoi(s) - 1];
 				}
@@ -397,7 +340,6 @@ void LoadObj(char* FileName, MODEL* Model)
 				c = fgetc(file);
 			} while (c != '\n' && c != '\r');
 
-			//四角は三角に分割
 			if (in == 4)
 			{
 				Model->IndexArray[ic] = vc - 4;
@@ -419,7 +361,6 @@ void LoadObj(char* FileName, MODEL* Model)
 	fclose(file);
 }
 
-//Material 読み込み///////////////////////////////////////////////////////////////////
 void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short* MaterialNum)
 {
 	char str[256];
@@ -435,7 +376,6 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 	MODEL_MATERIAL* materialArray;
 	unsigned short materialNum = 0;
 
-	//要素数カウント
 	while (TRUE)
 	{
 		fscanf(file, "%s", str);
@@ -449,11 +389,9 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 		}
 	}
 
-	//メモリ確保
 	materialArray = new MODEL_MATERIAL[materialNum];
 	ZeroMemory(materialArray, sizeof(MODEL_MATERIAL) * materialNum);
 
-	//要素読込
 	int mc = -1;
 
 	fseek(file, 0, SEEK_SET);
@@ -467,7 +405,6 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 
 		if (strcmp(str, "newmtl") == 0)
 		{
-			//Material 名
 			mc++;
 			fscanf(file, "%s", materialArray[mc].Name);
 			strcpy(materialArray[mc].TextureName, "");
@@ -475,7 +412,6 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 		}
 		else if (strcmp(str, "Ka") == 0)
 		{
-			//アンビエント
 			fscanf(file, "%f", &materialArray[mc].Material.Ambient.x);
 			fscanf(file, "%f", &materialArray[mc].Material.Ambient.y);
 			fscanf(file, "%f", &materialArray[mc].Material.Ambient.z);
@@ -483,12 +419,10 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 		}
 		else if (strcmp(str, "Kd") == 0)
 		{
-			//ディフューズ
 			fscanf(file, "%f", &materialArray[mc].Material.Diffuse.x);
 			fscanf(file, "%f", &materialArray[mc].Material.Diffuse.y);
 			fscanf(file, "%f", &materialArray[mc].Material.Diffuse.z);
 
-			// Mayaでテクスチャを貼ると0.0fになっちゃうみたいなので
 			if ((materialArray[mc].Material.Diffuse.x + materialArray[mc].Material.Diffuse.y + materialArray[mc].Material.Diffuse.z) == 0.0f)
 			{
 				materialArray[mc].Material.Diffuse.x = materialArray[mc].Material.Diffuse.y = materialArray[mc].Material.Diffuse.z = 1.0f;
@@ -498,7 +432,6 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 		}
 		else if (strcmp(str, "Ks") == 0)
 		{
-			//スペキュラ
 			fscanf(file, "%f", &materialArray[mc].Material.Specular.x);
 			fscanf(file, "%f", &materialArray[mc].Material.Specular.y);
 			fscanf(file, "%f", &materialArray[mc].Material.Specular.z);
@@ -506,17 +439,14 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 		}
 		else if (strcmp(str, "Ns") == 0)
 		{
-			//スペキュラ強度
 			fscanf(file, "%f", &materialArray[mc].Material.Shininess);
 		}
 		else if (strcmp(str, "d") == 0)
 		{
-			//アルファ
 			fscanf(file, "%f", &materialArray[mc].Material.Diffuse.w);
 		}
 		else if (strcmp(str, "map_Kd") == 0)
 		{
-			//テクスチャ
 			fscanf(file, "%s", str);
 
 			char path[256];
@@ -534,21 +464,17 @@ void LoadMaterial(char* FileName, MODEL_MATERIAL** MaterialArray, unsigned short
 	fclose(file);
 }
 
-// モデルの全Material のディフューズを取得する。Max16個分にしてある
 void GetModelDiffuse(DX11_MODEL* Model, XMFLOAT4* diffuse)
 {
 	int max = (Model->SubsetNum < MODEL_MAX_MATERIAL) ? Model->SubsetNum : MODEL_MAX_MATERIAL;
 
 	for (unsigned short i = 0; i < max; i++)
 	{
-		// ディフューズ設定
 		diffuse[i] = Model->SubsetArray[i].Material.Material.Diffuse;
 	}
 }
 
-// モデルの指定Material のディフューズをセットする。
 void SetModelDiffuse(DX11_MODEL* Model, int mno, XMFLOAT4 diffuse)
 {
-	// ディフューズ設定
 	Model->SubsetArray[mno].Material.Material.Diffuse = diffuse;
 }

@@ -1,48 +1,33 @@
-//=============================================================================
-//
-// [enemy.h]
-// Created by Li Runtu 2022 liruntu2333@gmail.com
-//
-//=============================================================================
 #pragma once
 
-//*****************************************************************************
-// MACROS
-//*****************************************************************************
 #define MAX_ENEMY		(5)
 
 #define	ENEMY_SIZE		(5.0f)
 
-//*****************************************************************************
-// STRUCT Definition
-//*****************************************************************************
 struct ENEMY
 {
-	XMFLOAT4X4			mtxWorld;			// world matrix
-	XMFLOAT3			pos;				// モデルの位置
-	XMFLOAT3			rot;				// モデルの向き(回転)
-	XMFLOAT3			scl;				// モデルの大きさ(スケール)
+	XMFLOAT4X4			mtxWorld;			  
+	XMFLOAT3			pos;				 
+	XMFLOAT3			rot;				 
+	XMFLOAT3			scl;				 
 
 	BOOL				use;
 	BOOL				load;
-	DX11_MODEL			model;				// モデル情報
-	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	// モデルの色
+	DX11_MODEL			model;				 
+	XMFLOAT4			diffuse[MODEL_MAX_MATERIAL];	 
 
-	float				spd;				// 移動スピード
-	float				size;				// 当たり判定の大きさ
-	int					shadowIdx;			// 影のインデックス番号
+	float				spd;				 
+	float				size;				 
+	int					shadowIdx;			 
 
-	INTERPOLATION_DATA* tbl_adr;			// アニメデータのテーブル先頭アドレス
-	int					tbl_size;			// 登録したテーブルのレコード総数
-	float				move_time;			// 実行時間
+	INTERPOLATION_DATA* tbl_adr;			 
+	int					tbl_size;			 
+	float				move_time;			 
 
-	XMFLOAT4			quaternion;	// クォータニオン
-	XMFLOAT3			upVector;	// 自分が立っている所
+	XMFLOAT4			quaternion;	 
+	XMFLOAT3			upVector;	 
 };
 
-//*****************************************************************************
-// Prototype declaration
-//*****************************************************************************
 HRESULT InitEnemy(void);
 void UninitEnemy(void);
 void UpdateEnemy(void);
