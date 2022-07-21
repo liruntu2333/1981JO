@@ -1,6 +1,12 @@
 # 1981JO
-An 3D mesh sample implemented by DirectX 11.
+An 3D mesh renderer implemented by DirectX 11.
 Ground mesh been rendered with spotlight shadow map method.
+
+Platform:
+Windows
+
+Build & Runtime evironment:
+Microsoft DirectX Redistributable SDK (June 2010)
 
 Check demo play video for forward information.
 https://www.bilibili.com/video/BV1f44y1u755/
