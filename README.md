@@ -1,6 +1,6 @@
 # 1981JO
 An 3D mesh renderer implemented by DirectX 11.
-Ground mesh been rendered with spotlight shadow map method.
+Meshes been rendered with spotlight shadow map method.
 
 Platform:
 Windows
